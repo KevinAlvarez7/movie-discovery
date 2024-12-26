@@ -16,18 +16,35 @@ export default async function Home() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Movie Discovery</h1>
-      <FilterSection />
-      <Suspense fallback={<div>Loading movies...</div>}>
-        {error ? (
-          <div className="text-red-500 text-center py-4">
-            {error}
-          </div>
-        ) : (
-          <MovieCarousel initialMovies={movies} />
-        )}
-      </Suspense>
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-gray-800 text-center mb-8">
+          Movie Discovery
+        </h1>
+        
+        <div className="max-w-3xl mx-auto mb-8">
+          <FilterSection />
+        </div>
+
+        <Suspense 
+          fallback={
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+            </div>
+          }
+        >
+          {error ? (
+            <div className="text-center py-8">
+              <div className="text-red-500 text-lg font-medium mb-2">Error</div>
+              <div className="text-gray-600">{error}</div>
+            </div>
+          ) : (
+            <div className="mt-8">
+              <MovieCarousel initialMovies={movies} />
+            </div>
+          )}
+        </Suspense>
+      </div>
     </main>
   );
 }

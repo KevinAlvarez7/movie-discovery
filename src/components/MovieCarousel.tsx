@@ -17,22 +17,27 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({ initialMovies }) => {
   };
 
   return (
-    <motion.div className="movie-carousel">
-      {movies.map((movie) => (
-        <motion.div
-          key={movie.id}
-          drag="y"
-          dragConstraints={{ top: 0, bottom: 0 }}
-          onDragEnd={(_, info) => {
-            if (info.offset.y > 100) {
-              handleSwipeDown(movie.id);
-            }
-          }}
-        >
-          <MovieCard {...movie} />
-        </motion.div>
-      ))}
-    </motion.div>
+    <div className="relative w-full overflow-hidden">
+      <div className="flex flex-wrap justify-center gap-6 p-4">
+        {movies.map((movie) => (
+          <motion.div
+            key={movie.id}
+            className="relative"
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 100) {
+                handleSwipeDown(movie.id);
+              }
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <MovieCard {...movie} />
+          </motion.div>
+        ))}
+      </div>
+    </div>
   );
 };
 
