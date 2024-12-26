@@ -1,4 +1,5 @@
-// src/components/MovieCarousel.tsx
+"use client";
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import MovieCard from './MovieCard';
