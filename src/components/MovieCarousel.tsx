@@ -1,24 +1,20 @@
 // src/components/MovieCarousel.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import MovieCard from './MovieCard';
-
-interface Movie {
-  id: number;
-  title: string;
-  posterPath: string;
-  imdbRating: number;
-  rottenTomatoesRating: number;
-  streamingPlatform: string;
-  synopsis: string;
-}
+import { Movie } from '@/types/movie';
 
 interface MovieCarouselProps {
-  movies: Movie[];
-  onSwipeDown: (movieId: number) => void;
+  initialMovies: Movie[];
 }
 
-const MovieCarousel: React.FC<MovieCarouselProps> = ({ movies, onSwipeDown }) => {
+const MovieCarousel: React.FC<MovieCarouselProps> = ({ initialMovies }) => {
+  const [movies, setMovies] = useState(initialMovies);
+
+  const handleSwipeDown = (movieId: number) => {
+    setMovies(movies.filter(movie => movie.id !== movieId));
+  };
+
   return (
     <motion.div className="movie-carousel">
       {movies.map((movie) => (
@@ -28,7 +24,7 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({ movies, onSwipeDown }) =>
           dragConstraints={{ top: 0, bottom: 0 }}
           onDragEnd={(_, info) => {
             if (info.offset.y > 100) {
-              onSwipeDown(movie.id);
+              handleSwipeDown(movie.id);
             }
           }}
         >

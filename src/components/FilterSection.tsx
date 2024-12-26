@@ -9,15 +9,19 @@ interface FilterValues {
 }
 
 interface FilterSectionProps {
-  onFilterChange: (filters: FilterValues) => void;
+  onFilterChange?: (filters: FilterValues) => void;
 }
 
 const FilterSection: React.FC<FilterSectionProps> = ({ onFilterChange }) => {
+  const handleFilterChange = (filters: FilterValues) => {
+    onFilterChange?.(filters);
+  };
+
   return (
     <div className="filter-section">
       <Select.Root onValueChange={(value: string) => {
         if (value === 'movie' || value === 'series') {
-          onFilterChange({ type: value });
+          handleFilterChange({ type: value });
         }
       }}>
         <Select.Trigger>
@@ -33,7 +37,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onFilterChange }) => {
         min={0}
         max={10}
         step={0.1}
-        onValueChange={(value) => onFilterChange({ imdbRating: value[0] })}
+        onValueChange={(value) => handleFilterChange({ imdbRating: value[0] })}
       >
         <Slider.Track>
           <Slider.Range />

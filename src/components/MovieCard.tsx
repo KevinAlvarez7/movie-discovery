@@ -4,36 +4,24 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 interface MovieCardProps {
+  id: number;
   title: string;
   posterPath: string;
-  imdbRating: number;
-  rottenTomatoesRating: number;
-  streamingPlatform: string;
-  synopsis: string;
+  overview: string;
+  voteAverage: number;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
   title,
   posterPath,
-  imdbRating,
-  rottenTomatoesRating,
-  streamingPlatform,
-  synopsis,
+  voteAverage,
+  overview,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
-    <motion.div
-      className="movie-card"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => setIsFlipped(!isFlipped)}
-    >
-      <motion.div
-        className="card-content"
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.5 }}
-      >
+    <motion.div className="movie-card" onClick={() => setIsFlipped(!isFlipped)}>
+      <motion.div className="card-content" animate={{ rotateY: isFlipped ? 180 : 0 }}>
         {!isFlipped ? (
           <div className="card-front">
             <Image 
@@ -44,14 +32,12 @@ const MovieCard: React.FC<MovieCardProps> = ({
               priority
             />
             <h3>{title}</h3>
-            <p>IMDB: {imdbRating}</p>
-            <p>Rotten Tomatoes: {rottenTomatoesRating}%</p>
-            <p>Watch on: {streamingPlatform}</p>
+            <p>Rating: {voteAverage}/10</p>
           </div>
         ) : (
           <div className="card-back">
             <h3>{title}</h3>
-            <p>{synopsis}</p>
+            <p>{overview}</p>
           </div>
         )}
       </motion.div>

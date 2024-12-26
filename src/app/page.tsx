@@ -1,79 +1,35 @@
-// src/pages/index.tsx
-import React, { useState, useEffect } from 'react';
-import Layout from '../components/Layout';
-import MovieCarousel from '../components/MovieCarousel';
-import FilterSection from '../components/FilterSection';
-import axios from 'axios';
+import { Suspense } from 'react';
+import MovieCarousel from '@/components/MovieCarousel';
+import FilterSection from '@/components/FilterSection';
+import { fetchMovies } from '@/lib/tmdb';
+import { Movie } from '@/types/movie';
 
-interface FilterValues {
-  type?: 'movie' | 'series';
-  imdbRating?: number;
-}
+export default async function Home() {
+  let movies: Movie[] = [];
+  let error = null;
 
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string;
-  vote_average: number;
-  vote_count: number;
-  overview: string;
-  posterPath: string;
-  imdbRating: number;
-  rottenTomatoesRating: number;
-  streamingPlatform: string;
-  synopsis: string;
-}
-
-interface TMDBMovie {
-  id: number;
-  title: string;
-  poster_path: string;
-  vote_average: number;
-  vote_count: number;
-  overview: string;
-}
-
-const Home: React.FC = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [filters, setFilters] = useState<FilterValues>({});
-
-  useEffect(() => {
-    fetchMovies();
-  }, [filters]);
-
-  const fetchMovies = async () => {
-    try {
-      const response = await axios.get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&sort_by=popularity.desc`
-      );
-      const transformedMovies = response.data.results.map((movie: TMDBMovie) => ({
-        ...movie,
-        posterPath: movie.poster_path,
-        imdbRating: movie.vote_average,
-        rottenTomatoesRating: 75,
-        streamingPlatform: 'Netflix',
-        synopsis: movie.overview
-      }));
-      setMovies(transformedMovies);
-    } catch (error) {
-      console.error('Error fetching movies:', error);
-    }
-  };
-
-  const handleSwipeDown = (movieId: number) => {
-    setMovies(movies.filter((movie) => movie.id !== movieId));
-  };
-
-  const handleFilterChange = (newFilters: FilterValues) => {
-    setFilters({ ...filters, ...newFilters });
-  };
+  try {
+    movies = await fetchMovies();
+  } catch (e) {
+    error = e instanceof Error ? e.message : 'An unknown error occurred';
+    console.error('Error in Home component:', error);
+  }
 
   return (
-    <Layout>
-      <FilterSection onFilterChange={handleFilterChange} />
-      <MovieCarousel movies={movies} onSwipeDown={handleSwipeDown} />
-    </Layout>
+    <main className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-4">Movie Discovery</h1>
+      <FilterSection />
+      <Suspense fallback={<div>Loading movies...</div>}>
+        {error ? (
+          <div className="text-red-500 text-center py-4">
+            {error}
+          </div>
+        ) : (
+          <MovieCarousel initialMovies={movies} />
+        )}
+      </Suspense>
+    </main>
   );
-};
+}
 
-export default Home;
+  
