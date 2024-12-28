@@ -1,9 +1,10 @@
 // src/components/MovieCard.tsx
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import ReactStars from 'react-stars';
 
 interface MovieCardProps {
   id: number;
@@ -17,42 +18,37 @@ const MovieCard: React.FC<MovieCardProps> = ({
   title,
   posterPath,
   voteAverage,
-  overview,
 }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-
   return (
-    <motion.div 
-      className="relative w-72 h-[450px] cursor-pointer perspective-1000"
-      onClick={() => setIsFlipped(!isFlipped)}
-    >
-      <motion.div 
-        className="relative w-full h-full transition-transform duration-500 transform-style-3d"
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-      >
-        {!isFlipped ? (
-          <div className="absolute w-full h-full bg-white rounded-lg shadow-lg backface-hidden">
-            <div className="relative w-full h-[350px]">
-              <Image 
-                src={`https://image.tmdb.org/t/p/w500${posterPath}`}
-                alt={title}
-                fill
-                className="rounded-t-lg object-cover"
-                priority
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold truncate">{title}</h3>
-              <p className="text-sm text-gray-600">Rating: {voteAverage.toFixed(1)}/10</p>
-            </div>
+    <motion.div className="w-full h-full">
+      <div className="w-full h-full relative bg-white rounded-lg overflow-hidden">
+        <div className="absolute inset-0">
+          <Image 
+            className="rounded-lg w-full h-full"
+            src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+            alt={title}
+            width={0}
+            height={0}
+            sizes="(max-width: 480px) 100vw, 50vw"
+            style={{ width: '100%', height: '100%', objectFit: 'fill' }}
+            priority
+          />
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 flex flex-col p-4 gap-4 bg-gradient-to-t from-white/50 to-transparent backdrop-blur-[2px]">
+          <h3 className='font-bold text-black text-lg'>{title}</h3>
+          <div className="text-slate-800 text-sm flex items-center gap-2">
+            <p className="m-0">Rating: </p>
+            <ReactStars
+              count={5}
+              value={voteAverage / 2}
+              edit={false}
+              size={20}
+              color2={'#ffd700'}
+            />
+            <span>({voteAverage.toFixed(1)})</span>
           </div>
-        ) : (
-          <div className="absolute w-full h-full p-6 bg-white rounded-lg shadow-lg backface-hidden transform rotate-y-180">
-            <h3 className="text-xl font-semibold mb-4">{title}</h3>
-            <p className="text-gray-600 text-sm line-clamp-[12]">{overview}</p>
-          </div>
-        )}
-      </motion.div>
+        </div>
+      </div>
     </motion.div>
   );
 };

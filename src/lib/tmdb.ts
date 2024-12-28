@@ -11,14 +11,14 @@ interface TMDBMovie {
   vote_average: number;
 }
 
-export async function fetchMovies(): Promise<Movie[]> {
+export async function fetchMovies(page: number = 1): Promise<Movie[]> {
   if (!API_KEY) {
     throw new Error('TMDB API key is not set. Please check your environment variables.');
   }
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc`,
+      `${API_BASE_URL}/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&page=${page}`,
       { next: { revalidate: 3600 } } // Revalidate every hour
     );
 

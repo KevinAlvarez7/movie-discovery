@@ -1,49 +1,70 @@
-import { Suspense } from 'react';
+'use client';
+
 import MovieCarousel from '@/components/MovieCarousel';
-import FilterSection from '@/components/FilterSection';
+import MovieCardSkeleton from '@/components/MovieCardSkeleton';
 import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/movie';
+import { useState, useEffect } from 'react';
 
-export default async function Home() {
-  let movies: Movie[] = [];
-  let error = null;
+export default function Home() {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
-  try {
-    movies = await fetchMovies();
-  } catch (e) {
-    error = e instanceof Error ? e.message : 'An unknown error occurred';
-    console.error('Error in Home component:', error);
-  }
+  useEffect(() => {
+    loadInitialMovies();
+  }, []);
+
+  const loadInitialMovies = async () => {
+    try {
+      setIsLoading(true);
+      const initialMovies = await fetchMovies();
+      setMovies(initialMovies);
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred';
+      setError(errorMessage);
+      console.error('Error in Home component:', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    try {
+      const nextPage = page + 1;
+      const newMovies = await fetchMovies(nextPage);
+      setMovies(prev => [...prev, ...newMovies]);
+      setPage(nextPage);
+    } catch (e) {
+      console.error('Error loading more movies:', e);
+    }
+  };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-8">
+    <main className="w-full h-screen flex bg-gradient-to-b from-red-50 to-red-100 overflow-hidden">
+      <div className="flex flex-col w-full py-8 overflow-hidden">
         <h1 className="text-4xl font-bold text-gray-800 text-center mb-8">
           Movie Discovery
         </h1>
-        
-        <div className="max-w-3xl mx-auto mb-8">
+        {/* <div className="max-w-3xl mx-auto justify-center center-algin mb-8">
           <FilterSection />
-        </div>
-
-        <Suspense 
-          fallback={
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+        </div> */}
+        <div className="flex-1 mt-8 overflow-hidden">
+          {isLoading ? (
+            <div className="flex justify-center">
+              <MovieCardSkeleton />
             </div>
-          }
-        >
-          {error ? (
-            <div className="text-center py-8">
-              <div className="text-red-500 text-lg font-medium mb-2">Error</div>
-              <div className="text-gray-600">{error}</div>
-            </div>
+          ) : error ? (
+            <div className="text-red-500 text-center p-4">{error}</div>
           ) : (
-            <div className="mt-8">
-              <MovieCarousel initialMovies={movies} />
-            </div>
+            <MovieCarousel 
+              initialMovies={movies} 
+              onLoadMore={loadMore} 
+              isLoading={isLoading}
+            />
           )}
-        </Suspense>
+        </div>
       </div>
     </main>
   );
