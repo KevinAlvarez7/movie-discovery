@@ -42,9 +42,9 @@ export default function Home() {
   };
 
   return (
-    <main className="w-full h-screen flex bg-gradient-to-b from-red-50 to-red-100 overflow-hidden">
+    <main className="w-full h-screen flex bg-gray-950 overflow-hidden">
       <div className="flex flex-col w-full py-8 overflow-hidden">
-        <h1 className="text-4xl font-bold text-gray-800 text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-100 text-center mb-8">
           Movie Discovery
         </h1>
         {/* <div className="max-w-3xl mx-auto justify-center center-algin mb-8">
