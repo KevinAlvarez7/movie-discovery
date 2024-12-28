@@ -30,7 +30,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             width={0}
             height={0}
             sizes="(max-width: 480px) 100vw, 50vw"
-            style={{ width: '100%', height: '100%', objectFit: 'fill' }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             priority
           />
         </div>
