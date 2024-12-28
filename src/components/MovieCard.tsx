@@ -21,7 +21,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
 }) => {
   return (
     <motion.div className="w-full h-full">
-      <div className="w-full h-full relative bg-white rounded-lg overflow-hidden">
+      <div className="w-full h-full relative bg-white rounded-lg overflow-hidden pointer-events-none">
         <div className="absolute inset-0">
           <Image 
             className="rounded-lg w-full h-full"
