@@ -1,6 +1,6 @@
 'use client';
 
-import MovieCarousel from '@/components/MovieCarousel';
+import { MovieCarousel } from '@/components/MovieCarousel';
 import MovieCardSkeleton from '@/components/MovieCardSkeleton';
 import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/movie';
