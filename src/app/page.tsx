@@ -1,21 +1,31 @@
+// src/app/page.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import MovieCarousel from '@/components/MovieCarousel';
 import MovieCardSkeleton from '@/components/MovieCardSkeleton';
 import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/movie';
-import { useState, useEffect } from 'react';
+import { useMovieContext } from '@/context/MovieContext';
+import { Bookmark } from 'lucide-react';
 
 export default function Home() {
+  // State management for movies and loading
   const [movies, setMovies] = useState<Movie[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
+  
+  // Get context for shortlist functionality
+  const { addToShortlist, isMovieShortlisted, shortlistedMovies } = useMovieContext();
 
+  // Load initial movies when component mounts
   useEffect(() => {
     loadInitialMovies();
   }, []);
 
+  // Function to load initial set of movies
   const loadInitialMovies = async () => {
     try {
       setIsLoading(true);
@@ -30,6 +40,7 @@ export default function Home() {
     }
   };
 
+  // Function to load more movies when needed
   const loadMore = async () => {
     try {
       const nextPage = page + 1;
@@ -41,16 +52,20 @@ export default function Home() {
     }
   };
 
+  // Handler for when current movie changes in carousel
+  const handleCurrentMovie = (movie: Movie) => {
+    setCurrentMovie(movie);
+    console.log('Current movie changed:', movie.title);
+  };
+
   return (
-    <main className="w-full h-screen flex bg-gray-950 overflow-hidden">
-      <div className="flex flex-col w-full py-8 overflow-hidden">
-        <h1 className="text-4xl font-bold text-gray-100 text-center mb-8">
+    <main className="w-full h-screen flex flex-col bg-gray-950 overflow-hidden">
+      <div className="flex flex-col flex-1">
+        <h1 className="text-4xl font-bold text-gray-100 text-center mb-8 pt-8">
           Movie Discovery
         </h1>
-        {/* <div className="max-w-3xl mx-auto justify-center center-algin mb-8">
-          <FilterSection />
-        </div> */}
-        <div className="flex-1 mt-8 overflow-hidden">
+        
+        <div className="flex-1 relative">
           {isLoading ? (
             <div className="flex justify-center">
               <MovieCardSkeleton />
@@ -62,12 +77,38 @@ export default function Home() {
               initialMovies={movies} 
               onLoadMore={loadMore} 
               isLoading={isLoading}
+              onCurrentMovieChange={handleCurrentMovie}
             />
           )}
         </div>
+
+        {/* Shortlist controls - only shown when a movie is selected */}
+        {currentMovie && (
+          <div className="w-full flex justify-center items-center gap-4 p-4 bg-gray-900/50 backdrop-blur-sm">
+            <div className="relative">
+              <button
+                onClick={() => addToShortlist(currentMovie)}
+                className="p-2 rounded-full hover:bg-white/20 text-white"
+              >
+                <Bookmark 
+                  className={`w-6 h-6 ${isMovieShortlisted(currentMovie.id) ? 'fill-current' : ''}`}
+                />
+                {shortlistedMovies.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {shortlistedMovies.length}
+                  </span>
+                )}
+              </button>
+            </div>
+            <button
+              onClick={() => addToShortlist(currentMovie)}
+              className="px-6 py-2 rounded-full bg-white/25 hover:bg-white/40 backdrop-blur-[8px] transition-colors text-white"
+            >
+              {isMovieShortlisted(currentMovie.id) ? 'Shortlisted' : 'Shortlist'}
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );
 }
-
-  
