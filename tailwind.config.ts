@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 import type { Config } from "tailwindcss";
 
 export default {
@@ -11,7 +12,12 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-      },
+      }, 
+      fontFamily: {
+        // Use the CSS variables we defined
+        sans: ['var(--font-outfit)'],
+        handwritten: ['var(--font-handwritten)'],
+      },    
     },
   },
   plugins: [],

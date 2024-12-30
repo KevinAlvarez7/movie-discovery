@@ -8,6 +8,7 @@ import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/movie';
 import { useMovieContext } from '@/context/MovieContext';
 import { Bookmark } from 'lucide-react';
+import { NoiseBackground } from '@/components/NoiseBackground';
 
 export default function Home() {
   // State management for movies and loading
@@ -60,7 +61,11 @@ export default function Home() {
 
   return (
     <main className="w-full h-screen flex flex-col bg-gray-950 overflow-hidden">
-      <div className="flex flex-col flex-1">
+      <NoiseBackground 
+      baseColor="#221F1F"
+      noiseOpacity={0.02}
+      noiseSize={240}
+      className="min-h-screen flex flex-col flex-1">
         <h1 className="text-4xl font-bold text-gray-100 text-center mb-8 pt-8">
           Movie Discovery
         </h1>
@@ -108,7 +113,7 @@ export default function Home() {
             </button>
           </div>
         )}
-      </div>
+      </NoiseBackground>
     </main>
   );
 }
