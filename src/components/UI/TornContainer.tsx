@@ -1,59 +1,78 @@
-import React from 'react';
+import React, { ReactNode, useRef, useEffect, useState } from 'react';
 
-const TornContainer = ({ children, className = '' }) => {
-  // Generate random jagged points for the torn effect
+interface TornContainerProps {
+  children: ReactNode;
+  className?: string;
+}
+
+const TornContainer: React.FC<TornContainerProps> = ({ children, className = '' }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const maskId = React.useId();
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateDimensions = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        setDimensions({
+          width: rect.width,
+          height: rect.height
+        });
+      }
+    };
+    updateDimensions();
+    const observer = new ResizeObserver(updateDimensions);
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const generateJaggedPath = () => {
-    // Start from top-left
-    let path = 'M 0 0';
+    const { width, height } = dimensions;
+    if (!width || !height) return '';
+
+    const segments = 50;
+    const jaggedness = Math.min(width, height) * 0.05;
     
-    // Right edge jagged effect
-    const rightX = 100;
-    for (let y = 0; y <= 100; y += 5) {
-      const randomX = rightX + (Math.random() * 3 - 1.5);
-      path += ` L ${randomX} ${y}`;
-    }
-    
-    // Bottom edge
-    path += ` L 100 100 L 0 100`;
-    
-    // Left edge jagged effect
-    for (let y = 100; y >= 0; y -= 5) {
-      const randomX = 0 + (Math.random() * 3 - 1.5);
-      path += ` L ${randomX} ${y}`;
-    }
-    
-    path += ' Z';
+    const getRandom = () => (Math.random() - 0.5) * jaggedness;
+
+    const path = [
+      `M 0 0`,
+      // Top edge (straight)
+      `L ${width} 0`,
+      // Right edge (jagged)
+      ...Array(segments).fill(0).map((_, i) => 
+        `L ${width + getRandom()} ${(i + 1) * (height / segments)}`
+      ),
+      // Bottom edge (straight)
+      `L ${width} ${height} L 0 ${height}`,
+      // Left edge (jagged)
+      ...Array(segments).fill(0).map((_, i) => 
+        `L ${getRandom()} ${height - ((i + 1) * (height / segments))}`
+      ),
+      'Z'
+    ].join(' ');
+
     return path;
   };
 
   return (
-    <div className="relative">
-      {/* SVG mask for the torn effect */}
-      <svg className="absolute w-0 h-0">
-        <defs>
-          <mask id="torn-mask">
-            <path 
-              d={generateJaggedPath()} 
-              fill="white"
-              vectorEffect="non-scaling-stroke"
-              transform="scale(1)"
-            />
-          </mask>
-        </defs>
-      </svg>
-
-      {/* Content container with mask applied */}
-      <div 
-        className={`relative ${className}`}
-        style={{
-          maskImage: 'url(#torn-mask)',
-          WebkitMaskImage: 'url(#torn-mask)',
-          maskMode: 'alpha',
-          WebkitMask: 'alpha'
-        }}
-      >
+    <div ref={containerRef} className="relative w-full h-full">
+      <div className={`relative ${className}`} style={{ clipPath: `url(#${maskId})` }}>
         {children}
       </div>
+      <svg 
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ position: 'absolute', zIndex: 10 }}
+        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+        aria-hidden="true"
+      >
+        <defs>
+          <clipPath id={maskId}>
+            <path d={generateJaggedPath()} />
+          </clipPath>
+        </defs>
+      </svg>
     </div>
   );
 };

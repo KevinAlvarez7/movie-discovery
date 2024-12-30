@@ -1,6 +1,6 @@
 // src/components/NoiseBackground.tsx
 import React, { useMemo } from 'react';
-import { generateNoisePattern, getRGBColor, NoiseOptions } from '../utils/useNoise';
+import { generateNoisePattern, getRGBColor, NoiseOptions } from '../../utils/useNoise';
 
 interface NoiseBackgroundProps extends Partial<NoiseOptions> {
   className?: string;

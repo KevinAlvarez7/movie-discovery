@@ -2,7 +2,7 @@
 "use client";
 
 import { useMovieContext } from '@/context/MovieContext';
-import MovieCard from '@/components/MovieCard';
+import MovieCard from '@/components/MovieCards/MovieCard';
 
 export default function ShortlistPage() {
   const { shortlistedMovies } = useMovieContext();

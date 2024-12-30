@@ -5,7 +5,8 @@ import React, { JSX } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import ReactStars from 'react-stars';
-import { NoiseBackground } from './NoiseBackground';
+import { NoiseBackground } from '../UI/NoiseBackground';
+import TornContainer from '../UI/TornContainer';
 
 interface MovieCardProps {
   title: string;
@@ -34,29 +35,32 @@ const MovieCard = ({
             priority
           />
         </div>
-        {/* Content container - forced to bottom */}
         <div className="absolute inset-x-0 bottom-0">
-          <NoiseBackground
-            noiseSize={120}
-            noiseOpacity={0.12}
-            baseColor="#f1fafa"
-            baseOpacity={0.7}
-            className="flex flex-col mx-4 mb-4 p-4 gap-4 shadow-sm rounded-xl backdrop-blur-sm"
-          >
-            <h3 className='font-handwritten font-bold text-black text-lg'>{title}</h3>
-            <div className="text-slate-800 text-sm flex items-center gap-2">
-              <p className="m-0 font-handwritten">Rating: </p>
-              <ReactStars
-                count={5}
-                value={voteAverage / 2}
-                edit={false}
-                size={20}
-                color2={'#ffd700'}
-              />
-              <span className='font-handwritten'>({voteAverage.toFixed(1)})</span>
-            </div>
-          </NoiseBackground>
+        <div className="mx-4 mb-4 overflow-visible">
+          <TornContainer>
+            <NoiseBackground
+              noiseSize={120}
+              noiseOpacity={0.12}
+              baseColor="#f1fafa"
+              baseOpacity={0.7}
+              className="flex flex-col p-4 gap-4 shadow-sm backdrop-blur-sm"
+            >
+              <h3 className='font-handwritten font-bold text-black text-lg'>{title}</h3>
+              <div className="text-slate-800 text-sm flex items-center gap-2">
+                <p className="m-0 font-handwritten">Rating: </p>
+                <ReactStars
+                  count={5}
+                  value={voteAverage / 2}
+                  edit={false}
+                  size={20}
+                  color2={'#ffd700'}
+                />
+                <span className='font-handwritten'>({voteAverage.toFixed(1)})</span>
+              </div>
+            </NoiseBackground>
+          </TornContainer>
         </div>
+      </div>
       </div>
     </motion.div>
   );

@@ -2,13 +2,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import MovieCarousel from '@/components/MovieCarousel';
-import MovieCardSkeleton from '@/components/MovieCardSkeleton';
+import MovieCarousel from '@/components/MovieCards/MovieCarousel';
+import MovieCardSkeleton from '@/components/MovieCards/MovieCardSkeleton';
 import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/movie';
 import { useMovieContext } from '@/context/MovieContext';
 import { Bookmark } from 'lucide-react';
-import { NoiseBackground } from '@/components/NoiseBackground';
+import { NoiseBackground } from '@/components/UI/NoiseBackground';
 
 export default function Home() {
   // State management for movies and loading
