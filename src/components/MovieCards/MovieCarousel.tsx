@@ -160,8 +160,8 @@ const MovieCarousel = ({
                 scale: index === currentIndex ? 1 : 0.9,
                 filter: index === currentIndex ? 'brightness(1)' : 'brightness(0.7)',
                 boxShadow: index === currentIndex 
-                  ? '0 0 16px 2px rgba(255, 255, 255, 0.2)' 
-                  : '0 0 10px 0px rgba(255, 255, 255, 0.1)'
+                  ? '0 0 16px 0px rgba(0, 0, 0, 0.3)' 
+                  : '0 0 8px 0px rgba(0, 0, 0, 0.1)'
               }}
               transition={{
                 duration: 0.3,

@@ -14,19 +14,18 @@ interface MovieCardProps {
   voteAverage: number;
 }
 
-const MovieCard = ({ 
-  title, 
-  posterPath,
-  voteAverage 
-}: MovieCardProps): JSX.Element => {
+const MovieCard = ({ title, posterPath, voteAverage }: MovieCardProps): JSX.Element => {
+  // Generate random tilt between -2 and 2 degrees for content container
+  const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
+
+  console.log(`Content tilt for ${title}: ${tiltAngle}deg`);
+
   return (
-    <motion.div className="w-full h-full rounded-2xl">
-      {/* Added relative positioning to this container */}
+    <motion.div className="w-full h-full rounded-xl">
       <div className="w-full h-full relative overflow-hidden">
-        {/* Image container */}
         <div className="absolute inset-0">
           <Image 
-            className="rounded-lg w-full h-full"
+            className="rounded-lg w-full h-full pointer-events-none"
             src={`https://image.tmdb.org/t/p/w500${posterPath}`}
             alt={title}
             width={1000}
@@ -35,15 +34,17 @@ const MovieCard = ({
             priority
           />
         </div>
-        <div className="absolute inset-x-0 bottom-0">
-        <div className="mx-4 mb-4 overflow-visible">
+        {/* Apply transform rotate to content container */}
+        <div className="absolute inset-x-0 bottom-0" style={{ transform: `rotate(${tiltAngle}deg)` }}>
+          {/* Rest of content container remains the same */}
+          <div className="mx-4 mb-4 overflow-visible">
           <TornContainer>
             <NoiseBackground
               noiseSize={120}
               noiseOpacity={0.12}
               baseColor="#f1fafa"
               baseOpacity={0.7}
-              className="flex flex-col p-4 gap-4 shadow-sm backdrop-blur-sm"
+              className="flex flex-col p-4 gap-4 backdrop-blur-sm"
             >
               <h3 className='font-handwritten font-bold text-black text-lg'>{title}</h3>
               <div className="text-slate-800 text-sm flex items-center gap-2">
