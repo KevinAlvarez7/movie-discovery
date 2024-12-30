@@ -15,7 +15,7 @@ export default function ShortlistPage() {
       <div className="flex flex-col gap-6">
         {shortlistedMovies.map(movie => (
           <div key={movie.id} className="w-full max-w-2xl mx-auto">
-            <MovieCard {...movie} />
+            <MovieCard posterPath={''} voteAverage={0} {...movie} />
           </div>
         ))}
       </div>

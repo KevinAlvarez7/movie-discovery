@@ -31,7 +31,7 @@ const TornContainer: React.FC<TornContainerProps> = ({ children, className = '' 
     const { width, height } = dimensions;
     if (!width || !height) return '';
 
-    const segments = 28;
+    const segments = 50;
     const jaggedness = Math.min(width, height) * 0.1;
     
     const getRandom = () => (Math.random() - 0.5) * jaggedness;

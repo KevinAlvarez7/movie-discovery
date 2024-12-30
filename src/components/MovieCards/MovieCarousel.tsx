@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, PanInfo } from "framer-motion";
 import MovieCard from './MovieCard';
-import { Movie } from '@/types/movie';
+import { Movie } from '@/types/TMDBMovie';
 
 interface MovieCarouselProps {
   initialMovies: Movie[];
@@ -14,22 +14,41 @@ interface MovieCarouselProps {
   onCurrentMovieChange?: (movie: Movie) => void;
 }
 
-const MovieCarousel = ({ 
-  initialMovies, 
-  onLoadMore, 
-  isLoading,
-  onCurrentMovieChange 
-}: MovieCarouselProps) => {
-  // Track the index of the currently displayed movie
-  const [currentIndex, setCurrentIndex] = useState(0);
-  
-  // Manage responsive dimensions for the carousel
-  const [dimensions, setDimensions] = useState({
-    cardWidth: 0,
-    cardHeight: 0,
-    gapWidth: 24,
-    isMobile: false
-  });
+  const MovieCarousel = ({ 
+    initialMovies, 
+    onLoadMore, 
+    isLoading,
+    onCurrentMovieChange 
+  }: MovieCarouselProps) => {
+    // Track the index of the currently displayed movie
+    const [currentIndex, setCurrentIndex] = useState(0);
+    
+    // Manage responsive dimensions for the carousel
+    const [dimensions, setDimensions] = useState({
+      cardWidth: 0,
+      cardHeight: 0,
+      gapWidth: 24,
+      isMobile: false
+    });
+
+
+  // Add new state for infinite loading
+  const [shouldLoadMore, setShouldLoadMore] = useState(false);
+
+  // Add infinite loading effects
+  useEffect(() => {
+    if (currentIndex >= initialMovies.length - 10 && !isLoading) {
+      setShouldLoadMore(true);
+    }
+  }, [currentIndex, initialMovies.length, isLoading]);
+
+  useEffect(() => {
+    if (shouldLoadMore) {
+      onLoadMore();
+      setShouldLoadMore(false);
+    }
+  }, [shouldLoadMore, onLoadMore]);
+
 
   // Update dimensions when window size changes and notify parent of current movie
   useEffect(() => {
@@ -169,7 +188,7 @@ const MovieCarousel = ({
               }}
             >
               <div className="w-full h-full rounded-2xl overflow-hidden">
-                <MovieCard {...movie} />
+                <MovieCard posterPath={''} voteAverage={0} {...movie} />
               </div>
             </motion.div>
           );
