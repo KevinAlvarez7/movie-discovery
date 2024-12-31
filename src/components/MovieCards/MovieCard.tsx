@@ -5,8 +5,9 @@ import React, { JSX } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import ReactStars from 'react-stars';
-import { NoiseBackground } from '@/components/ui/NoiseBackground';
-import TornContainer from '@/components/ui/TornContainer';
+// In src/components/MovieCards/MovieCard.tsx
+import { NoiseBackground } from '../ui/NoiseBackground';
+import TornContainer from '../ui/TornContainer';
 
 interface MovieCardProps {
   title: string;
@@ -18,7 +19,7 @@ const MovieCard = ({ title, posterPath, voteAverage }: MovieCardProps): JSX.Elem
   // Generate random tilt between -2 and 2 degrees for content container
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
 
-  console.log(`Content tilt for ${title}: ${tiltAngle}deg`);
+
 
   return (
 // Often adding to just the inner div is enough
