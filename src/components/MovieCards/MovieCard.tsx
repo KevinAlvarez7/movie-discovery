@@ -5,6 +5,7 @@ import React, { JSX } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import ReactStars from 'react-stars';
+// In MovieCard.tsx, update to:
 import { NoiseBackground } from '../../components/ui/NoiseBackground';
 import TornContainer from '../../components/ui/TornContainer';
 
