@@ -1,9 +1,5 @@
 'use client';
 
-// Add this at the top of your page.tsx
-console.log('Current directory:', __dirname);
-console.log('NoiseBackground path:', require.resolve('@/components/ui/NoiseBackground'));
-
 import { useState, useEffect } from 'react';
 import MovieCarousel from '../components/MovieCards/MovieCarousel';
 import MovieCardSkeleton from '../components/MovieCards/MovieCardSkeleton';
