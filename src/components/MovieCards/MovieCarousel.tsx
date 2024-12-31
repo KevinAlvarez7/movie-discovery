@@ -133,7 +133,7 @@ interface MovieCarouselProps {
       </div>
 
       {/* Navigation buttons */}
-      <button
+      {/* <button
         onClick={handlePrev}
         className="absolute left-4 top-1/2 transform -translate-y-1/2 border border-slate-300 bg-white/25 backdrop-blur-[8px] p-2 rounded-full"
         disabled={currentIndex === 0}
@@ -146,7 +146,7 @@ interface MovieCarouselProps {
         disabled={currentIndex === initialMovies.length - 1 || isLoading}
       >
         Next
-      </button>
+      </button> */}
     </div>
   );
 };

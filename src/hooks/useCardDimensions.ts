@@ -21,11 +21,14 @@ export const useCardDimensions = () => {
     // Function to calculate dimensions based on viewport
     const calculateDimensions = () => {
       const vw = window.innerWidth;
+      const vh = window.innerHeight;
       const isMobile = vw <= 480;
 
       if (isMobile) {
-        const cardWidth = vw - 40;
-        const cardHeight = cardWidth;
+        // For mobile, use 80% of viewport height
+        const cardHeight = vh * 0.8;
+        // Calculate width based on 2:3 ratio
+        const cardWidth = (cardHeight * 2) / 3;
         
         setDimensions({
           cardWidth,
@@ -33,20 +36,23 @@ export const useCardDimensions = () => {
           gapWidth: 8,
           isMobile: true
         });
-        
-
       } else {
-        const cardWidth = Math.min(Math.max(350, vw * 0.25), 450);
-        const cardHeight = cardWidth * 1.5;
+        // For desktop, use 70% of viewport height
+        const cardHeight = vh * 0.7;
+        // Calculate width based on 2:3 ratio
+        const cardWidth = (cardHeight * 2) / 3;
         
+        // Add constraints to prevent cards from getting too large
+        const maxWidth = Math.min(vw * 0.3, 500);
+        const finalWidth = Math.min(cardWidth, maxWidth);
+        const finalHeight = (finalWidth * 3) / 2;
+
         setDimensions({
-          cardWidth,
-          cardHeight,
+          cardWidth: finalWidth,
+          cardHeight: finalHeight,
           gapWidth: Math.min(Math.max(8, vw * 0.05), 12),
           isMobile: false
         });
-        
-
       }
     };
 

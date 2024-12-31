@@ -56,7 +56,7 @@ export default function Home() {
         noiseSize={240}
         className="min-h-screen flex flex-col flex-1">
           <StreamingFilters/>      
-        <div className="flex-1 relative">
+        <div className="h-full flex flex-col justify-center items-center relative">
           {initialLoading ? ( // Only show skeleton on initial load
             <div className="flex justify-center">
               <MovieCardSkeleton />
