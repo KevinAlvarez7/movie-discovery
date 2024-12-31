@@ -4,8 +4,7 @@
 import React, { JSX } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import ReactStars from 'react-stars';
-// In src/components/MovieCards/MovieCard.tsx
+import StarRating from '../UI/StarRating';
 import { NoiseBackground } from '../UI/NoiseBackground';
 import TornContainer from '../UI/TornContainer';
 
@@ -49,14 +48,12 @@ const MovieCard = ({ title, posterPath, voteAverage }: MovieCardProps): JSX.Elem
               className="w-fit flex flex-col justify-center p-4 gap-4 backdrop-blur-sm"
             >
               <h3 className='flex flex-row justify-center items-center w-auto font-handwritten font-bold text-black text-lg'>{title}</h3>
-              <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2">
+              <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2 overflow-visible">
                 <p className="m-0 font-handwritten">Rating: </p>
-                <ReactStars
-                  count={5}
-                  value={voteAverage / 2}
-                  edit={false}
-                  size={20}
-                  color2={'#ffd700'}
+                <StarRating 
+                  rating={voteAverage}
+                  size={24}
+                  className="mt-2"
                 />
                 <span className='font-handwritten'>({voteAverage.toFixed(1)})</span>
               </div>

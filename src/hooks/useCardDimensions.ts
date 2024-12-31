@@ -26,9 +26,10 @@ export const useCardDimensions = () => {
 
       if (isMobile) {
         // For mobile, use 80% of viewport height
-        const cardHeight = vh * 0.8;
+        const cardHeight = vh * 0.5;
         // Calculate width based on 2:3 ratio
-        const cardWidth = (cardHeight * 2) / 3;
+        const cardWidth = vw - 20;
+        console.log("this is the card height", cardHeight);
         
         setDimensions({
           cardWidth,

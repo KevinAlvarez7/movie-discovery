@@ -1,5 +1,5 @@
-// src/components/NoiseBackground.tsx
-import React, { useMemo } from 'react';
+// src/components/UI/NoiseBackground.tsx
+import React, { useMemo, useEffect, useState } from 'react';
 import { generateNoisePattern, getRGBColor, NoiseOptions } from '../../utils/useNoise';
 
 interface NoiseBackgroundProps extends Partial<NoiseOptions> {
@@ -18,16 +18,23 @@ export const NoiseBackground: React.FC<NoiseBackgroundProps> = ({
   baseOpacity = 1,
   ...props
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const noisePattern = useMemo(() => {
+    if (!isMounted) return '';
     return generateNoisePattern({ noiseSize, noiseOpacity });
-  }, [noiseSize, noiseOpacity]);
+  }, [noiseSize, noiseOpacity, isMounted]);
 
   return (
     <div
       className={`${className}`}
       style={{
         backgroundColor: baseColor ? getRGBColor(baseColor, baseOpacity) : 'white',
-        backgroundImage: `url(${noisePattern})`,
+        backgroundImage: noisePattern ? `url(${noisePattern})` : 'none',
         backgroundRepeat: 'repeat',
         ...style
       }}

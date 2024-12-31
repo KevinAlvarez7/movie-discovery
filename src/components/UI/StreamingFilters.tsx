@@ -31,7 +31,7 @@ const ToggleFilterBg = ({
 
   return (
     <motion.div 
-      className="bg-white p-1 w-full h-full rounded-full overflow-hidden flex items-center justify-center"
+      className="bg-[#d0d0d0] m-1 p-1 w-full h-full rounded-full overflow-hidden flex items-center justify-center"
       // Framer Motion animation properties
       animate={{ 
         rotate: isSelected ? tiltAngle : 0,
@@ -59,6 +59,7 @@ const ToggleFilterBg = ({
             alt={`Filter ${id}`}
             width={0}
             height={8}
+            priority
             sizes="100vw"
             className="w-auto h-full object-cover"
             onError={() => console.error('Image failed to load:', imagePath)}

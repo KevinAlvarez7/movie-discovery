@@ -104,7 +104,7 @@ interface MovieCarouselProps {
                   ${isMobile ? 'h-full' : ''} "
               style={{
                 width: `${cardWidth}px`,
-                height: cardDimensions.isMobile ? '100%' : `${cardHeight}px`,
+                height: cardDimensions.isMobile ? '85%' : `${cardHeight}px`,
               }}
               // Enable horizontal dragging with constraints
               drag="x"
