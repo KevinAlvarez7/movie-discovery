@@ -1,3 +1,4 @@
+// MovieCardSkeleton.tsx
 import React from 'react';
 import TornContainer from '../ui/TornContainer';
 import { NoiseBackground } from '../ui/NoiseBackground';
@@ -6,7 +7,6 @@ const MovieCardSkeleton = () => {
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
 
   return (
-    // Remove dimension styles, just fill parent
     <div className="w-full h-full relative">
       {/* Main poster skeleton with shimmer */}
       <div className="absolute inset-0 bg-gray-300 rounded-xl overflow-hidden">

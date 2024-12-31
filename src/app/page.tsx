@@ -1,15 +1,17 @@
+// page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import MovieCarousel from '@/components/MovieCards/MovieCarousel';
-import MovieCardSkeleton from '@/components/MovieCards/MovieCardSkeleton';
+import MovieCarouselSkeleton from '@/components/MovieCards/MovieCarouselSkeleton';
 import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/TMDBMovie';
 import { useMovieContext } from '@/context/MovieContext';
 import { NoiseBackground } from '@/components/ui/NoiseBackground';
 import StreamingFilters from '@/components/ui/StreamingFilters';
 import { useCardDimensions } from '@/hooks/useCardDimensions';
-
+import PageLoader from '@/components/PageLoader';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -29,7 +31,8 @@ export default function Home() {
       } catch (e) {
         setError(e instanceof Error ? e.message : 'An unknown error occurred');
       } finally {
-        setInitialLoading(false);
+        // Delay setting initialLoading to false by 1 second
+        setTimeout(() => setInitialLoading(false), 1000);
       }
     }
     fetchInitialMovies();
@@ -50,48 +53,61 @@ export default function Home() {
 
   return (
     <main className="w-full h-screen flex flex-col bg-gray-950 overflow-hidden">
-      <NoiseBackground 
+      {/* Render the main content */}
+      <NoiseBackground
         baseColor="#221F1F"
         noiseOpacity={0.02}
         noiseSize={240}
-        className="min-h-screen flex flex-col flex-1">
-          <StreamingFilters/>      
+        className="min-h-screen flex flex-col flex-1"
+      >
+        <StreamingFilters />
         <div className="flex-1 relative">
-          {initialLoading ? ( // Only show skeleton on initial load
-            <div className="flex justify-center">
-              <MovieCardSkeleton />
-            </div>
-          ) : error ? (
+          {error ? (
             <div className="text-red-500 text-center p-4">{error}</div>
+          ) : initialLoading ? (
+            <MovieCarouselSkeleton />
           ) : (
-            <MovieCarousel 
-            initialMovies={movies} 
-            onLoadMore={loadMoreMovies} 
-            isLoading={isLoadingMore}
-            onCurrentMovieChange={setCurrentMovie}
-          />
+            <MovieCarousel
+              initialMovies={movies}
+              onLoadMore={loadMoreMovies}
+              isLoading={isLoadingMore}
+              onCurrentMovieChange={setCurrentMovie}
+            />
           )}
         </div>
-        {/* Shortlist controls - only shown when a movie is selected */}
+        {/* Shortlist controls */}
         {currentMovie && (
           <div className="w-full flex flex-row justify-center items-center mt-2 px-5">
-          <div 
-            className={`flex items-center justify-center gap-2 p-1 rounded-t-md bg-black/10 backdrop-blur-sm shadow-[0_0px_12px_0px_rgba(0,0,0,0.5)]`}
-            style={{ width: `${cardDimensions.cardWidth}px` }}
-          >
-            <div className="w-full flex flex-row items-center justify-center gap-2">
-              <button
-                onClick={() => addToShortlist(currentMovie)}
-                className="p-2 rounded-full text-white/50 hover:text-white font-handwritten text-sm w-auto"
-              >
-                <span> {shortlistedMovies.length} Shortlisted</span>
-              </button>
-
+            <div 
+              className={`flex items-center justify-center gap-2 p-1 rounded-t-md bg-black/10 backdrop-blur-sm shadow-[0_0px_12px_0px_rgba(0,0,0,0.5)]`}
+              style={{ width: `${cardDimensions.cardWidth}px` }}
+            >
+              <div className="w-full flex flex-row items-center justify-center gap-2">
+                <button
+                  onClick={() => addToShortlist(currentMovie)}
+                  className="p-2 rounded-full text-white/50 hover:text-white font-handwritten text-sm w-auto"
+                >
+                  <span> {shortlistedMovies.length} Shortlisted</span>
+                </button>
+              </div>
             </div>
-          </div>
           </div>
         )}
       </NoiseBackground>
+
+      {/* Render the page loader on top of the main content */}
+      <AnimatePresence>
+        {initialLoading && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <PageLoader />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
