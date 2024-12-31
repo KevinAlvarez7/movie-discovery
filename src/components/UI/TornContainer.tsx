@@ -34,7 +34,7 @@ const TornContainer: React.FC<TornContainerProps> = ({ children, className = '' 
     const segments = 50;
     const jaggedness = Math.min(width, height) * 0.1;
     
-    const getRandom = () => (Math.random() - 0.5) * jaggedness;
+    const getRandom = () => (Math.random() - 0.65) * jaggedness;
 
     const path = [
       `M 0 0`,
@@ -57,12 +57,12 @@ const TornContainer: React.FC<TornContainerProps> = ({ children, className = '' 
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
-      <div className={`relative ${className}`} style={{ clipPath: `url(#${maskId})` }}>
+    <div ref={containerRef} className=" w-full h-full">
+      <div className={` ${className}`} style={{ clipPath: `url(#${maskId})` }}>
         {children}
       </div>
       <svg 
-        className="absolute inset-0 w-full h-full pointer-events-none"
+        className=" inset-0 w-full h-full pointer-events-none"
         style={{ position: 'absolute', zIndex: 10 }}
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         aria-hidden="true"

@@ -24,7 +24,7 @@ export const NoiseBackground: React.FC<NoiseBackgroundProps> = ({
 
   return (
     <div
-      className={`relative ${className}`}
+      className={`${className}`}
       style={{
         backgroundColor: baseColor ? getRGBColor(baseColor, baseOpacity) : 'white',
         backgroundImage: `url(${noisePattern})`,

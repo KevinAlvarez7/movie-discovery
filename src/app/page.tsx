@@ -6,9 +6,10 @@ import MovieCardSkeleton from '@/components/MovieCards/MovieCardSkeleton';
 import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/TMDBMovie';
 import { useMovieContext } from '@/context/MovieContext';
-import { Bookmark } from 'lucide-react';
 import { NoiseBackground } from '@/components/ui/NoiseBackground';
 import StreamingFilters from '@/components/ui/StreamingFilters';
+import { useCardDimensions } from '@/hooks/useCardDimensions';
+
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -17,7 +18,8 @@ export default function Home() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
   
-  const { addToShortlist, isMovieShortlisted, shortlistedMovies } = useMovieContext();
+  const { addToShortlist, shortlistedMovies } = useMovieContext();
+  const cardDimensions = useCardDimensions();
 
   useEffect(() => {
     async function fetchInitialMovies() {
@@ -72,28 +74,21 @@ export default function Home() {
         </div>
         {/* Shortlist controls - only shown when a movie is selected */}
         {currentMovie && (
-          <div className="w-full flex justify-center items-center gap-4 p-4">
-            <div className="relative">
+          <div className="w-full flex flex-row justify-center items-center mt-2 px-5">
+          <div 
+            className={`flex items-center justify-center gap-2 p-1 rounded-t-md bg-black/10 backdrop-blur-sm shadow-[0_0px_12px_0px_rgba(0,0,0,0.5)]`}
+            style={{ width: `${cardDimensions.cardWidth}px` }}
+          >
+            <div className="w-full flex flex-row items-center justify-center gap-2">
               <button
                 onClick={() => addToShortlist(currentMovie)}
-                className="p-2 rounded-full hover:bg-white/20 text-white"
+                className="p-2 rounded-full text-white/50 hover:text-white font-handwritten text-sm w-auto"
               >
-                <Bookmark 
-                  className={`w-6 h-6 ${isMovieShortlisted(currentMovie.id) ? 'fill-current' : ''}`}
-                />
-                {shortlistedMovies.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {shortlistedMovies.length}
-                  </span>
-                )}
+                <span> {shortlistedMovies.length} Shortlisted</span>
               </button>
+
             </div>
-            <button
-              onClick={() => addToShortlist(currentMovie)}
-              className="px-6 py-2 rounded-full bg-white/25 hover:bg-white/40 backdrop-blur-[8px] transition-colors text-white"
-            >
-              {isMovieShortlisted(currentMovie.id) ? 'Shortlisted' : 'Shortlist'}
-            </button>
+          </div>
           </div>
         )}
       </NoiseBackground>

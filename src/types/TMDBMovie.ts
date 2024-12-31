@@ -14,4 +14,3 @@ export interface TMDBResponse {
   total_pages: number;
 }
   
-  
