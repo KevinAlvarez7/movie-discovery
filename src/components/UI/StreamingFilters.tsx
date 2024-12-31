@@ -10,34 +10,6 @@ type FilterOption = {
   bgImage?: string;
 };
 
-// // Default filter with icon and name
-// const ToggleFilterDefault = ({
-//   id,
-//   name,
-//   icon,
-//   isSelected,
-//   onToggle
-// }: FilterOption & {
-//   isSelected: boolean;
-//   onToggle: (id: string) => void;
-// }) => {
-//   return (
-//     <button
-//       onClick={() => onToggle(id)}
-//       className={`
-//         flex items-center space-x-2 px-4 py-2 rounded-full
-//         whitespace-nowrap transition-all duration-300
-//         ${isSelected
-//           ? 'bg-blue-600 text-white'
-//           : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}
-//       `}
-//     >
-//       {icon && <span>{icon}</span>}
-//       {name && <span>{name}</span>}
-//     </button>
-//   );
-// };
-
 const ToggleFilterBg = ({
   id,
   bgImage,
@@ -119,19 +91,7 @@ const StreamingFilters = () => {
   };
 
   return (
-    <div className="w-full flex flex-row items-center justify-center py-4">
-      {/* Default filters */}
-      {/* <div className="overflow-x-auto flex space-x-4 px-4 mb-4">
-        {defaultFilters.map((filter) => (
-          <ToggleFilterDefault
-            key={filter.id}
-            {...filter}
-            isSelected={selectedFilters.includes(filter.id)}
-            onToggle={toggleFilter}
-          />
-        ))}
-      </div> */}
-      
+    <div className="w-full flex flex-row items-center justify-center py-4">      
       {/* Background image filters */}
       <div className= "flex flex-row gap-2 space-x-4 px-4 overflow-visible" >
         {bgFilters.map((filter) => (
