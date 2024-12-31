@@ -103,14 +103,6 @@ const ToggleFilterBg = ({
 const StreamingFilters = () => {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
-
-
-  // Example data for both filter types
-  // const defaultFilters: FilterOption[] = [
-  //   { id: 'netflix', name: 'Netflix', icon: '🎬' },
-  //   { id: 'disney', name: 'Disney+', icon: '✨' },
-  // ];
-
   const bgFilters: FilterOption[] = [
     { id: 'Netflix', bgImage: '/streamingLogos/Netflix_logo.png' },
     { id: 'Disney', bgImage: '/streamingLogos/disney_logo.png' },

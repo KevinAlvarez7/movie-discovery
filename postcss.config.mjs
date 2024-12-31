@@ -1,8 +1,14 @@
-/** @type {import('postcss-load-config').Config} */
-const config = {
-  plugins: {
-    tailwindcss: {},
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'image.tmdb.org',
+        pathname: '/t/p/**',
+      },
+    ],
   },
 };
 
-export default config;
+export default nextConfig;
