@@ -7,7 +7,7 @@ import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/TMDBMovie';
 import { useMovieContext } from '@/context/MovieContext';
 import { Bookmark } from 'lucide-react';
-import { NoiseBackground } from '@/components/UI/NoiseBackground';
+import { NoiseBackground } from '@/components/ui/NoiseBackground';
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);

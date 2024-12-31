@@ -1,4 +1,4 @@
-import { Movie } from '@/types/movie';
+import { Movie } from '@/types/TMDBMovie';
 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const API_BASE_URL = 'https://api.themoviedb.org/3';
