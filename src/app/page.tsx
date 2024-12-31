@@ -6,8 +6,8 @@ import MovieCardSkeleton from '../components/MovieCards/MovieCardSkeleton';
 import { fetchMovies } from '../lib/tmdb';
 import { Movie } from '../types/TMDBMovie';
 import { useMovieContext } from '../context/MovieContext';
-import { NoiseBackground } from '@/components/ui/NoiseBackground';
-import StreamingFilters from '@/components/ui/StreamingFilters';
+import { NoiseBackground } from '../components/ui/NoiseBackground';
+import StreamingFilters from '../components/ui/StreamingFilters';
 import { useCardDimensions } from '../hooks/useCardDimensions';
 
 
