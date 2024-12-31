@@ -57,9 +57,13 @@ export default function Home() {
         className="min-h-screen flex flex-col flex-1">
           <StreamingFilters/>      
         <div className="flex-1 relative">
-          {initialLoading ? ( // Only show skeleton on initial load
-            <div className="flex justify-center">
-              <MovieCardSkeleton />
+          {initialLoading ? (
+            <div className="flex flex-row gap-4 justify-center items-center">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} style={{ width: `${cardDimensions.cardWidth}px`, height: `${cardDimensions.cardHeight}px` }}>
+                  <MovieCardSkeleton />
+                </div>
+              ))}
             </div>
           ) : error ? (
             <div className="text-red-500 text-center p-4">{error}</div>
