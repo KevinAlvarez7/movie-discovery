@@ -5,8 +5,8 @@ import React, { JSX } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import ReactStars from 'react-stars';
-import { NoiseBackground } from '../ui/NoiseBackground';
-import TornContainer from '../ui/TornContainer';
+import { NoiseBackground } from '@/components/ui/NoiseBackground';
+import TornContainer from '@/components/ui/TornContainer';
 
 interface MovieCardProps {
   title: string;
