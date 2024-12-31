@@ -11,8 +11,8 @@ import { fetchMovies } from '../lib/tmdb';
 import { Movie } from '../types/TMDBMovie';
 import { useMovieContext } from '../context/MovieContext';
 // In src/app/page.tsx
-import { NoiseBackground } from '../components/ui/NoiseBackground';  // Changed from @/components/ui/NoiseBackground
-import StreamingFilters from '../components/ui/StreamingFilters';    // Changed from @/components/ui/StreamingFilters
+import { NoiseBackground } from '../components/UI/NoiseBackground';  // Changed from @/components/ui/NoiseBackground
+import StreamingFilters from '../components/UI/StreamingFilters';    // Changed from @/components/ui/StreamingFilters
 import { useCardDimensions } from '../hooks/useCardDimensions';
 
 
