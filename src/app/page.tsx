@@ -7,7 +7,8 @@ import { fetchMovies } from '@/lib/tmdb';
 import { Movie } from '@/types/TMDBMovie';
 import { useMovieContext } from '@/context/MovieContext';
 import { Bookmark } from 'lucide-react';
-import { NoiseBackground } from '@/components/UI/NoiseBackground';
+import { NoiseBackground } from '@/components/ui/NoiseBackground'
+import StreamingFilterWithProvider from '@/components/ui/FilterContainer';
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -52,10 +53,7 @@ export default function Home() {
         noiseOpacity={0.02}
         noiseSize={240}
         className="min-h-screen flex flex-col flex-1">
-        <h1 className="text-4xl font-bold text-gray-100 text-center mb-8 pt-8">
-          Movie Discovery
-        </h1>
-        
+        <StreamingFilterWithProvider />
         <div className="flex-1 relative">
           {initialLoading ? ( // Only show skeleton on initial load
             <div className="flex justify-center">

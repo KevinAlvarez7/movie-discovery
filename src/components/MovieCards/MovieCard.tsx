@@ -5,8 +5,8 @@ import React, { JSX } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import ReactStars from 'react-stars';
-import { NoiseBackground } from '../UI/NoiseBackground';
-import TornContainer from '../UI/TornContainer';
+import { NoiseBackground } from '../ui/NoiseBackground';
+import TornContainer from '../ui/TornContainer';
 
 interface MovieCardProps {
   title: string;
@@ -18,21 +18,23 @@ const MovieCard = ({ title, posterPath, voteAverage }: MovieCardProps): JSX.Elem
   // Generate random tilt between -2 and 2 degrees for content container
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
 
-  console.log(`Content tilt for ${title}: ${tiltAngle}deg`);
+  // Add logging to check poster path
+  console.log(`Poster path for ${title}:`, posterPath);
 
   return (
     <motion.div className="w-full h-full rounded-xl">
       <div className="w-full h-full relative overflow-hidden">
         <div className="absolute inset-0">
-          <Image 
-            className="rounded-lg w-full h-full pointer-events-none"
-            src={`https://image.tmdb.org/t/p/w500${posterPath}`}
-            alt={title}
-            width={1000}
-            height={1500}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            priority
-          />
+        <Image 
+          className="rounded-lg w-full h-full pointer-events-none"
+          src={posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : '/movie-placeholder.jpg'}
+          alt={`${title} poster`}
+          width={500}
+          height={750}
+          style={{ objectFit: 'cover' }}
+          priority
+          unoptimized
+        />
         </div>
         {/* Apply transform rotate to content container */}
         <div className="absolute inset-x-0 bottom-0" style={{ transform: `rotate(${tiltAngle}deg)` }}>

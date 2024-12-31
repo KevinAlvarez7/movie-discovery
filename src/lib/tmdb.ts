@@ -1,15 +1,7 @@
-import { Movie } from '@/types/movie';
+import { Movie } from '@/types/TMDBMovie';
 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const API_BASE_URL = 'https://api.themoviedb.org/3';
-
-interface TMDBMovie {
-  id: number;
-  title: string;
-  poster_path: string;
-  overview: string;
-  vote_average: number;
-}
 
 export async function fetchMovies(page: number = 1): Promise<Movie[]> {
   if (!API_KEY) {
@@ -27,7 +19,7 @@ export async function fetchMovies(page: number = 1): Promise<Movie[]> {
     }
 
     const data = await response.json();
-    return data.results.map((movie: TMDBMovie) => ({
+    return data.results.map((movie: Movie) => ({
       id: movie.id,
       title: movie.title,
       posterPath: movie.poster_path,
@@ -39,4 +31,32 @@ export async function fetchMovies(page: number = 1): Promise<Movie[]> {
     throw new Error('Failed to fetch movies. Please try again later.');
   }
 }
+
+export async function getWatchProviders(movieId: number, region: string) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/movie/${movieId}/watch/providers?api_key=${API_KEY}`
+    );
+    const data = await response.json();
+    return data.results[region]?.flatrate || [];
+  } catch (error) {
+    console.error('Error fetching watch providers:', error);
+    return [];
+  }
+}
+
+export async function getMoviesWithProviders(page = 1) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/discover/movie?api_key=${API_KEY}&page=${page}`
+    );
+    const data = await response.json();
+    return data.results || [];
+  } catch (error) {
+    console.error('Error fetching movies:', error);
+    return [];
+  }
+}
+
+
 
