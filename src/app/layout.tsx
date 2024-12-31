@@ -2,7 +2,7 @@
 
 import { Outfit, Gloria_Hallelujah} from 'next/font/google'
 import "./globals.css";
-import { MovieProvider } from '@/context/MovieContext';
+import { MovieProvider } from '../context/MovieContext';
 
 // Font configuration - remove the className property as it's not valid
 const outfit = Outfit({ 

@@ -4,8 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, PanInfo } from "framer-motion";
 import MovieCard from './MovieCard';
-import { Movie } from '@/types/TMDBMovie';
-import { useCardDimensions } from '@/hooks/useCardDimensions';
+import { Movie } from '../../types/TMDBMovie';
+import { useCardDimensions } from '../../hooks/useCardDimensions';
 
 interface MovieCarouselProps {
   initialMovies: Movie[];

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { useCardDimensions } from '@/hooks/useCardDimensions';
+import { useCardDimensions } from '../../hooks/useCardDimensions';
 
 const MovieCardSkeleton = () => {
   const { cardWidth } = useCardDimensions();
