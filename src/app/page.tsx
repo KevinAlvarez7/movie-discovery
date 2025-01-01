@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import MovieCarousel from '../components/MovieCards/MovieCarousel';
 import MovieCardSkeleton from '../components/MovieCards/MovieCardSkeleton';
-import { fetchMovies } from '../lib/tmdb';
+import { fetchMoviesWithProviders } from '../lib/tmdb';
 import { Movie } from '../types/TMDBMovie';
 import { useMovieContext } from '../context/MovieContext';
 // In src/app/page.tsx
 import { NoiseBackground } from '../components/UI/NoiseBackground';  // Changed from @/components/ui/NoiseBackground
 import StreamingFilters from '../components/UI/StreamingFilters';    // Changed from @/components/ui/StreamingFilters
 import { useCardDimensions } from '../hooks/useCardDimensions';
+import { useFilters } from '../context/FilterContext';
+import { matchesSelectedProviders } from '../utils/providerMapping';
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -21,10 +23,42 @@ export default function Home() {
   const { addToShortlist, shortlistedMovies } = useMovieContext();
   const cardDimensions = useCardDimensions();
 
+  const { selectedFilters } = useFilters();
+  
+  // Create filtered movies list
+  const filteredMovies = useMemo(() => {
+    console.log('Filtering movies with filters:', selectedFilters);
+    
+    return movies.filter(movie => {
+      // Debug log to see the actual movie data
+      console.log('Movie data:', {
+        title: movie.title,
+        providers: movie.providers,
+        rawProviders: movie.providers?.flatrate
+      });
+      
+      const providers = movie.providers?.flatrate;
+      const matches = matchesSelectedProviders(providers, selectedFilters);
+      
+      console.log(`Movie: ${movie.title}, Matches filters: ${matches}`, {
+        providers,
+        selectedFilters,
+        providerIds: providers?.map(p => p.provider_id)
+      });
+      
+      return matches;
+    });
+  }, [movies, selectedFilters]);
+
+  // Add an effect to log filter changes
+  useEffect(() => {
+    console.log('Selected filters changed:', selectedFilters);
+  }, [selectedFilters]);
+
   useEffect(() => {
     async function fetchInitialMovies() {
       try {
-        const initialMovies = await fetchMovies();
+        const initialMovies = await fetchMoviesWithProviders();
         setMovies(initialMovies);
       } catch (e) {
         setError(e instanceof Error ? e.message : 'An unknown error occurred');
@@ -39,7 +73,7 @@ export default function Home() {
     if (isLoadingMore) return;
     try {
       setIsLoadingMore(true);
-      const newMovies = await fetchMovies(movies.length / 20 + 1);
+      const newMovies = await fetchMoviesWithProviders(movies.length / 20 + 1);
       setMovies(prev => [...prev, ...newMovies]);
     } catch (e) {
       console.error('Error loading more movies:', e);
@@ -65,7 +99,7 @@ export default function Home() {
             <div className="text-red-500 text-center p-4">{error}</div>
           ) : (
             <MovieCarousel 
-            initialMovies={movies} 
+            initialMovies={filteredMovies} // Changed from movies to filteredMovies
             onLoadMore={loadMoreMovies} 
             isLoading={isLoadingMore}
             onCurrentMovieChange={setCurrentMovie}

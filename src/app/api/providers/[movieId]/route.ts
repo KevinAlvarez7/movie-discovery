@@ -20,23 +20,29 @@ export async function GET(
   try {
     const response = await fetch(
       `https://api.themoviedb.org/3/movie/${movieId}/watch/providers?api_key=${apiKey}`,
-      {
-        next: { revalidate: 86400 }
-      }
+      { next: { revalidate: 86400 } }
     );
 
     const data: WatchProviders = await response.json();
     
     if (!response.ok) {
+      console.error('TMDB API Error:', data);
       throw new Error(`TMDB API Error: ${JSON.stringify(data)}`);
     }
+
+    // Debug log the raw provider data
+    console.log('Raw provider data for movie:', movieId, data);
 
     const countryCode = 'US';
     const countryData = data.results[countryCode];
 
+    // Debug log the filtered country data
+    console.log('Filtered US provider data:', countryData);
+
     return NextResponse.json({
       providers: countryData || null,
-      countryCode
+      countryCode,
+      rawData: data // Temporarily include raw data for debugging
     });
   } catch (error) {
     console.error('Error fetching watch providers:', error);

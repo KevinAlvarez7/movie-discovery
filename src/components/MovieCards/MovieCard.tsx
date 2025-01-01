@@ -1,99 +1,74 @@
 // src/components/MovieCard.tsx
 "use client";
 
-import React, { JSX, useEffect, useState } from 'react';
+import React, { JSX, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import StarRating from '../UI/StarRating';
 import { NoiseBackground } from '../UI/NoiseBackground';
 import TornContainer from '../UI/TornContainer';
-import { CountryProviders } from '@/types/TMDBProvider'; // Import provider types
 
 interface MovieCardProps {
   title: string;
   poster_path: string;
   voteAverage: number;
-  movieId: number; // Add movieId to fetch providers
+  movieId: number;
+  providers?: {
+    flatrate?: Array<{
+      provider_id: number;
+      provider_name: string;
+      logo_path: string;
+    }>;
+  };
 }
 
-const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps): JSX.Element => {
+const MovieCard = ({ title, poster_path, voteAverage, movieId, providers }: MovieCardProps): JSX.Element => {
   // Generate random tilt between -2 and 2 degrees for content container
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
 
-    // Add state for providers
-    const [providers, setProviders] = useState<CountryProviders | null>(null);
-    const [isLoadingProviders, setIsLoadingProviders] = useState(true);
-
-    // Fetch providers when component mounts
-    useEffect(() => {
-      const fetchProviders = async () => {
-        // Only fetch if movieId is valid (greater than 0)
-        if (!movieId || movieId <= 0) {
-          console.log('Invalid movieId:', movieId);
-          return;
-        }
-
-        try {
-          const response = await fetch(`/api/providers/${movieId}`);
-          const data = await response.json();
-          
-          if (data.error) {
-            console.error('Error in provider data:', data.error);
-            return;
-          }
-          
-          console.log('Provider data for movie:', title, data);
-          setProviders(data.providers);
-        } catch (err) {
-          console.error('Error fetching providers for movie:', title, err);
-        } finally {
-          setIsLoadingProviders(false);
-        }
-      };
-  
-      fetchProviders();
-    }, [movieId, title]);
-
-
+  // Log providers for debugging
+  useEffect(() => {
+    console.log(`Providers for ${title}:`, providers);
+  }, [title, providers]);
 
   return (
-// Often adding to just the inner div is enough
-      <motion.div className="w-full h-full flex justify-center items-center rounded-xl">
-        <div className="w-full h-full relative overflow-hidden">
+    <motion.div className="w-full h-full flex justify-center items-center rounded-xl">
+      <div className="w-full h-full relative overflow-hidden">
         <div className="absolute inset-0">
           {poster_path && (
             <Image
               src={`https://image.tmdb.org/t/p/w500${poster_path}`}
               alt={title}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover rounded-xl"
               priority
             />
           )}
         </div>
-          {/* Providers Container - Outside TornContainer */}
-          {!isLoadingProviders && providers?.flatrate && (
-            <div className="absolute right-3 top-4 z-20 flex gap-3">
-              {providers.flatrate.slice(0, 3).map((provider) => {
-                const providerTilt = Math.random() * 12 - 6; // Generate unique tilt for each provider
-                return (
-                  <div 
-                    key={provider.provider_id}
-                    className="bg-[#f1fafa] p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
-                    style={{ transform: `rotate(${providerTilt}deg)`}} 
-                  >
-                    <Image
-                      src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                      alt={provider.provider_name}
-                      width={24}
-                      height={24}
-                      className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px]"
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          )}
+        {/* Providers Container */}
+        {providers?.flatrate && providers.flatrate.length > 0 && (
+          <div className="absolute right-3 top-4 z-20 flex gap-3">
+            {providers.flatrate.slice(0, 3).map((provider) => {
+              const providerTilt = Math.random() * 12 - 6;
+              return (
+                <div 
+                  key={provider.provider_id}
+                  className="bg-[#f1fafa] p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                  style={{ transform: `rotate(${providerTilt}deg)`}} 
+                >
+                  <Image
+                    src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
+                    alt={provider.provider_name}
+                    width={24}
+                    height={24}
+                    className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px]"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
         {/* Apply transform rotate to content container */}
         <div className="absolute inset-0 flex items-end justify-center pb-4" style={{ transform: `rotate(${tiltAngle}deg)` }}>
           <div className="w-fit flex flex-row items-center mx-4 mb-4 overflow-visible">

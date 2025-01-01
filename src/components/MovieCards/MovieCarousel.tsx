@@ -55,11 +55,18 @@ interface MovieCarouselProps {
   // Handle next movie navigation
   const handleNext = () => {
     setCurrentIndex((prev) => {
-      // If at the end, trigger load more but don't change index
-      if (prev === initialMovies.length - 1) {
+      // Prefetch next batch when we're 3 movies away from the end
+      if (prev >= initialMovies.length - 3) {
+        console.log('Prefetching next batch of movies...');
         onLoadMore();
+      }
+      
+      // Don't move past the last movie
+      if (prev === initialMovies.length - 1) {
         return prev;
       }
+      
+      console.log(`Moving to next movie: ${prev + 1}`);
       return prev + 1;
     });
   };
@@ -130,6 +137,7 @@ interface MovieCarouselProps {
                   poster_path={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
                   voteAverage={movie.vote_average || 0}
                   movieId={movie.id}
+                  providers={movie.providers}
                 />
               </div>
             </motion.div>

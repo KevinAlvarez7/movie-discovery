@@ -4,6 +4,7 @@ import { Outfit, Gloria_Hallelujah} from 'next/font/google'
 import "./globals.css";
 import { MovieProvider } from '../context/MovieContext';
 import { useEffect, useState } from 'react';
+import { FilterProvider } from '../context/FilterContext';
 
 // Font configuration - remove the className property as it's not valid
 const outfit = Outfit({ 
@@ -37,9 +38,11 @@ export default function RootLayout({
         className={outfit.className}
         {...(mounted ? {} : { suppressHydrationWarning: true })}
       >
-        <MovieProvider>
-          {children}
-        </MovieProvider>
+        <FilterProvider>
+          <MovieProvider>
+            {children}
+          </MovieProvider>
+        </FilterProvider>
       </body>
     </html>
   );
