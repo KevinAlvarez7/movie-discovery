@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import StarRating from '../UI/StarRating';
 import { NoiseBackground } from '../UI/NoiseBackground';
-import TornContainer from '../UI/TornContainer';
+import { TornContainer } from '../UI/TornContainer';
 
 interface MovieCardProps {
   title: string;
