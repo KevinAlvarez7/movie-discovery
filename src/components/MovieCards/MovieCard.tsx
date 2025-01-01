@@ -59,7 +59,7 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
   return (
 // Often adding to just the inner div is enough
       <motion.div className="w-full h-full flex justify-center items-center rounded-xl">
-        <div className="w-full h-full relative overflow-hidden flex justify-center items-center">
+        <div className="w-full h-full relative overflow-hidden">
         <div className="absolute inset-0">
           {poster_path && (
             <Image
@@ -71,24 +71,31 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
             />
           )}
         </div>
+          {/* Providers Container - Outside TornContainer */}
+          {!isLoadingProviders && providers?.flatrate && (
+            <div className="absolute right-3 top-4 z-20 flex gap-3">
+              {providers.flatrate.slice(0, 3).map((provider) => {
+                const providerTilt = Math.random() * 12 - 6; // Generate unique tilt for each provider
+                return (
+                  <div 
+                    key={provider.provider_id}
+                    className="bg-white p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                    style={{ transform: `rotate(${providerTilt}deg)`}} 
+                  >
+                    <Image
+                      src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
+                      alt={provider.provider_name}
+                      width={24}
+                      height={24}
+                      className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px]"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
         {/* Apply transform rotate to content container */}
         <div className="absolute inset-0 flex items-end justify-center pb-4" style={{ transform: `rotate(${tiltAngle}deg)` }}>
-          {/* Rest of content container remains the same */}
-            {/* Providers Container - Outside TornContainer */}
-            {!isLoadingProviders && providers?.flatrate && (
-              <div className="absolute top-4 right-4 flex gap-1 bg-white p-2 rounded-lg">
-                {providers.flatrate.slice(0, 3).map((provider) => (
-                  <Image
-                    key={provider.provider_id}
-                    src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                    alt={provider.provider_name}
-                    width={24}
-                    height={24}
-                    className="rounded-sm"
-                  />
-                ))}
-              </div>
-            )}
           <div className="w-fit flex flex-row items-center mx-4 mb-4 overflow-visible">
           <TornContainer>
             <NoiseBackground
@@ -96,15 +103,15 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
               noiseOpacity={0.12}
               baseColor="#f1fafa"
               baseOpacity={0.7}
-              className="w-fit flex flex-col justify-center p-4 gap-4 backdrop-blur-sm"
+              className="w-fit flex flex-col justify-center p-6 gap-4 backdrop-blur-sm"
             >
-              <h3 className='flex flex-row justify-center items-center w-auto font-handwritten font-bold text-black text-lg'>{title}</h3>
-              <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2 overflow-visible">
+              <h3 className='flex-row justify-center items-center w-auto font-handwritten font-bold inline-flex text-black text-lg'>{title}</h3>
+              <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2">
                 <p className="m-0 font-handwritten">Rating: </p>
                 <StarRating 
                   rating={voteAverage}
                   size={24}
-                  className="mt-2"
+                  className=""
                 />
                 <span className='font-handwritten'>({voteAverage.toFixed(1)})</span>
               </div>
@@ -112,6 +119,7 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
           </TornContainer>
 
         </div>
+
       </div>
       </div>
     </motion.div>
