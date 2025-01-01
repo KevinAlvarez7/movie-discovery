@@ -79,7 +79,7 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
                 return (
                   <div 
                     key={provider.provider_id}
-                    className="bg-white p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                    className="bg-[#f1fafa] p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
                     style={{ transform: `rotate(${providerTilt}deg)`}} 
                   >
                     <Image
