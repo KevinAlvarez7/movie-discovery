@@ -5,11 +5,11 @@ import MovieCarousel from '../components/MovieCards/MovieCarousel';
 import MovieCardSkeleton from '../components/MovieCards/MovieCardSkeleton';
 import { fetchMoviesWithProviders } from '../lib/tmdb';
 import { Movie } from '../types/TMDBMovie';
-import { useMovieContext } from '../context/MovieContext';
+// import { useMovieContext } from '../context/MovieContext';
 // In src/app/page.tsx
 import { NoiseBackground } from '../components/UI/NoiseBackground';  // Changed from @/components/ui/NoiseBackground
 import StreamingFilters from '../components/UI/StreamingFilters';    // Changed from @/components/ui/StreamingFilters
-import { useCardDimensions } from '../hooks/useCardDimensions';
+// import { useCardDimensions } from '../hooks/useCardDimensions';
 import { useFilters } from '../context/FilterContext';
 import { matchesSelectedProviders } from '../utils/providerMapping';
 
@@ -18,10 +18,10 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
+  // const [setCurrentMovie] = useState<Movie | null>(null);
   
-  const { addToShortlist, shortlistedMovies } = useMovieContext();
-  const cardDimensions = useCardDimensions();
+  // const { addToShortlist, shortlistedMovies } = useMovieContext();
+  // const cardDimensions = useCardDimensions();
 
   const { selectedFilter } = useFilters();
   
@@ -97,7 +97,7 @@ const filteredMovies = useMemo(() => {
             initialMovies={filteredMovies} // Changed from movies to filteredMovies
             onLoadMore={loadMoreMovies} 
             isLoading={isLoadingMore}
-            onCurrentMovieChange={setCurrentMovie}
+            // onCurrentMovieChange={setCurrentMovie}
           />
           )}
         </div>

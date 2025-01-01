@@ -58,7 +58,7 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: Mo
               priority={false}
               loading="lazy"
               className={`
-                object-cover rounded-xl 
+                h-full w-full object-cover rounded-xl 
                 transition-opacity duration-300
                 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}
               `}
