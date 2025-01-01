@@ -102,7 +102,7 @@ const filteredMovies = useMemo(() => {
           )}
         </div>
         {/* Shortlist controls - only shown when a movie is selected */}
-        {currentMovie && (
+        {/* {currentMovie && (
           <>
             <div className="w-full flex flex-row justify-center items-center mt-2 px-5">
               <div 
@@ -120,7 +120,7 @@ const filteredMovies = useMemo(() => {
               </div>
             </div>
           </>
-        )}
+        )} */}
       </NoiseBackground>
     </main>
   );
