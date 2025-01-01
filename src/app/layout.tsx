@@ -35,11 +35,7 @@ export default function RootLayout({
     <html lang="en" className={`${outfit.variable} ${handwritten.variable}`}>
       {/* Apply Outfit as the base font */}
       <head>
-        <link
-          rel="preload"
-          as="image"
-          href="[first-movie-poster-url]"
-        />
+        {/* Remove the preload tag since we can't know the first movie URL at build time */}
       </head>
       <body 
         className={outfit.className}

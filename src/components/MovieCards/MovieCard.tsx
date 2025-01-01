@@ -25,13 +25,11 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: Mo
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   
-  // Generate random tilt once when component mounts
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
   const providerTilts = React.useMemo(() => 
     Array(3).fill(0).map(() => Math.random() * 12 - 6)
   , []);
 
-  // Handle image load/error events
   const handleImageLoad = useCallback(() => {
     console.log(`Image loaded for: ${title}`);
     setIsImageLoaded(true);
@@ -50,7 +48,6 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: Mo
       exit={{ opacity: 0 }}
     >
       <div className="w-full h-full relative overflow-hidden">
-        {/* Poster Image with loading state */}
         <div className="absolute inset-0">
           {!imageError && poster_path && (
             <Image
@@ -58,17 +55,20 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: Mo
               alt={title}
               width={500}
               height={750}
-              priority={true}
-              loading="eager"
-              className="object-cover rounded-xl transition-opacity duration-300"
-              sizes="(max-width: 768px) 100vw, 500px"
+              priority={false}
+              loading="lazy"
+              className={`
+                object-cover rounded-xl 
+                transition-opacity duration-300
+                ${isImageLoaded ? 'opacity-100' : 'opacity-0'}
+              `}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               quality={75}
               onLoad={handleImageLoad}
               onError={handleImageError}
             />
           )}
           
-          {/* Fallback/placeholder while loading or on error */}
           {(!isImageLoaded || imageError) && (
             <div className="absolute inset-0 bg-gray-900 animate-pulse rounded-xl" />
           )}
@@ -110,7 +110,7 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: Mo
                 baseOpacity={0.7}
                 className="w-fit flex flex-col justify-center p-6 gap-4 backdrop-blur-sm"
               >
-                <h3 className='flex-row justify-center items-center w-auto font-handwritten font-bold inline-flex text-black text-lg'>
+                <h3 className="flex-row justify-center items-center w-auto font-handwritten font-bold inline-flex text-black text-lg">
                   {title}
                 </h3>
                 <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2">
@@ -119,7 +119,7 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: Mo
                     rating={voteAverage}
                     size={24}
                   />
-                  <span className='font-handwritten'>({voteAverage.toFixed(1)})</span>
+                  <span className="font-handwritten">({voteAverage.toFixed(1)})</span>
                 </div>
               </NoiseBackground>
             </TornContainer>

@@ -12,27 +12,46 @@ interface MovieCarouselWrapperProps {
   initialMovies: Movie[];
 }
 
-const MOVIES_PER_PAGE = 20; // Define constant for movies per page
-
 const MovieCarouselWrapper = ({ initialMovies }: MovieCarouselWrapperProps) => {
   // State for current page and loading
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
   const [visibleMovies, setVisibleMovies] = useState<Movie[]>([]);
+  const [movieCache, setMovieCache] = useState<Record<string, Movie[]>>({});
   
   const { addToShortlist, shortlistedMovies, updateVisibleMovies } = useMovieContext();
   const cardDimensions = useCardDimensions();
   const { selectedFilter } = useFilters();
 
-  // Memoize filtered movies to prevent unnecessary recalculations
+  // Initialize movie cache with all movies
+  useEffect(() => {
+    setMovieCache(prevCache => ({
+      ...prevCache,
+      'all': initialMovies,
+    }));
+    setVisibleMovies(initialMovies);
+  }, [initialMovies]);
+
+  // Memoize filtered movies with cache
   const filteredMovies = useMemo(() => {
-    if (!selectedFilter) return visibleMovies;
-  
-    return visibleMovies.filter(movie =>
+    if (!selectedFilter) return movieCache['all'] || [];
+
+    if (movieCache[selectedFilter]) {
+      return movieCache[selectedFilter];
+    }
+
+    const filtered = (movieCache['all'] || []).filter(movie =>
       matchesSelectedProviders(movie.providers?.flatrate, [selectedFilter])
     );
-  }, [visibleMovies, selectedFilter]);
+
+    setMovieCache(prevCache => ({
+      ...prevCache,
+      [selectedFilter]: filtered,
+    }));
+
+    return filtered;
+  }, [selectedFilter, movieCache]);
 
   // Load more movies handler with cleanup
   const loadMoreMovies = useCallback(async () => {
@@ -45,10 +64,21 @@ const MovieCarouselWrapper = ({ initialMovies }: MovieCarouselWrapperProps) => {
       const response = await fetch(`/api/movies?page=${currentPage + 1}`);
       const data = await response.json();
       
-      setVisibleMovies(prev => {
-        // Keep only last 2 pages worth of movies to limit memory usage
-        const startIndex = Math.max(0, prev.length - MOVIES_PER_PAGE);
-        return [...prev.slice(startIndex), ...data.movies];
+      setMovieCache(prevCache => {
+        const updatedCache = { ...prevCache };
+        
+        // Update 'all' cache with new movies
+        updatedCache['all'] = [...(prevCache['all'] || []), ...data.movies];
+        
+        // Update filtered cache if a filter is selected
+        if (selectedFilter) {
+          const newFilteredMovies = data.movies.filter(movie =>
+            matchesSelectedProviders(movie.providers?.flatrate, [selectedFilter])
+          );
+          updatedCache[selectedFilter] = [...(prevCache[selectedFilter] || []), ...newFilteredMovies];
+        }
+        
+        return updatedCache;
       });
       
       setCurrentPage(prev => prev + 1);
@@ -57,12 +87,7 @@ const MovieCarouselWrapper = ({ initialMovies }: MovieCarouselWrapperProps) => {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [currentPage, isLoadingMore]);
-
-  // Initialize visible movies
-  useEffect(() => {
-    setVisibleMovies(initialMovies);
-  }, [initialMovies]);
+  }, [currentPage, isLoadingMore, selectedFilter]);
 
   // Log current state for debugging
   useEffect(() => {
