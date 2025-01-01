@@ -19,6 +19,8 @@ interface MovieCardProps {
 const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps): JSX.Element => {
   // Generate random tilt between -2 and 2 degrees for content container
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
+    // Generate random tilt between -2 and 2 degrees for content container
+  const tiltAngle2 = React.useMemo(() => Math.random() * 8 - 4, []);
 
     // Add state for providers
     const [providers, setProviders] = useState<CountryProviders | null>(null);
@@ -59,7 +61,7 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
   return (
 // Often adding to just the inner div is enough
       <motion.div className="w-full h-full flex justify-center items-center rounded-xl">
-        <div className="w-full h-full relative overflow-hidden flex justify-center items-center">
+        <div className="w-full h-full relative overflow-hidden">
         <div className="absolute inset-0">
           {poster_path && (
             <Image
@@ -71,36 +73,41 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
             />
           )}
         </div>
+          {/* Providers Container - Outside TornContainer */}
+          {!isLoadingProviders && providers?.flatrate && (
+            <div className="absolute right-3 top-4 z-20 flex gap-2">
+              {providers.flatrate.slice(0, 3).map((provider) => (
+                <div 
+                  key={provider.provider_id}
+                  className=" bg-white p-1 rounded-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                  style={{ transform: `rotate(${tiltAngle2}deg)`}} 
+                >
+                  <Image
+                    src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
+                    alt={provider.provider_name}
+                    width={32}
+                    height={32}
+                    className="rounded-sm"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         {/* Apply transform rotate to content container */}
         <div className="absolute inset-0 flex items-end justify-center pb-4" style={{ transform: `rotate(${tiltAngle}deg)` }}>
           {/* Rest of content container remains the same */}
-            {/* Providers Container - Outside TornContainer */}
-            {!isLoadingProviders && providers?.flatrate && (
-              <div className="absolute top-4 right-4 flex gap-1 bg-white p-2 rounded-lg">
-                {providers.flatrate.slice(0, 3).map((provider) => (
-                  <Image
-                    key={provider.provider_id}
-                    src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                    alt={provider.provider_name}
-                    width={24}
-                    height={24}
-                    className="rounded-sm"
-                  />
-                ))}
-              </div>
-            )}
-          <div className="w-fit flex flex-row items-center mx-4 mb-4 overflow-visible">
+          <div className="w-fullflex flex-row items-center mx-4 mb-4 overflow-visible">
           <TornContainer>
             <NoiseBackground
               noiseSize={120}
               noiseOpacity={0.12}
               baseColor="#f1fafa"
               baseOpacity={0.7}
-              className="w-fit flex flex-col justify-center p-4 gap-4 backdrop-blur-sm"
+              className="w-full flex flex-col justify-center p-4 gap-4 backdrop-blur-sm"
             >
               <h3 className='flex flex-row justify-center items-center w-auto font-handwritten font-bold text-black text-lg'>{title}</h3>
               <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2 overflow-visible">
-                <p className="m-0 font-handwritten">Rating: </p>
+                <p className="m-0 font-handwritten">Agg. Rating: </p>
                 <StarRating 
                   rating={voteAverage}
                   size={24}
@@ -112,6 +119,7 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId }: MovieCardProps)
           </TornContainer>
 
         </div>
+
       </div>
       </div>
     </motion.div>
