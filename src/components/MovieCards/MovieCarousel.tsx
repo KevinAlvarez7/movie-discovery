@@ -48,7 +48,7 @@ const MovieCarousel = ({
   // Handle navigation
   const handleNext = () => {
     setCurrentIndex((prev) => {
-      if (prev >= initialMovies.length - 3 && !isLoading) {
+      if (prev >= initialMovies.length - WINDOW_SIZE && !isLoading) {
         console.log('Loading more movies...');
         onLoadMore();
       }
