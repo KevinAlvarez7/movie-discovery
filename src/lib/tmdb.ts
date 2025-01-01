@@ -30,9 +30,9 @@ export async function fetchMovies(page: number = 1): Promise<Movie[]> {
     return data.results.map((movie: TMDBMovie) => ({
       id: movie.id,
       title: movie.title,
-      posterPath: movie.poster_path,
+      poster_path: movie.poster_path,
       overview: movie.overview,
-      voteAverage: movie.vote_average,
+      vote_average: movie.vote_average,
     }));
   } catch (error) {
     console.error('Error fetching movies:', error);

@@ -125,7 +125,12 @@ interface MovieCarouselProps {
               }}
             >
               <div className="w-full h-full rounded-2xl overflow-hidden">
-                <MovieCard posterPath={''} voteAverage={0} {...movie} />
+                <MovieCard 
+                  {...movie}
+                  poster_path={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
+                  voteAverage={movie.vote_average || 0}
+                  movieId={movie.id}
+                />
               </div>
             </motion.div>
           );
