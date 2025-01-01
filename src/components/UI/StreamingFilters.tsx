@@ -44,10 +44,6 @@ const ToggleFilterBg = ({
         stiffness: 200,
         damping: 15
       }}
-      whileHover={{ 
-        scale: 1.01, // Subtle hover effect
-        transition: { duration: 0.2 }
-      }}
     >
 
         <button 
