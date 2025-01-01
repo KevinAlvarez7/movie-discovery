@@ -12,7 +12,7 @@ type FilterOption = {
   bgImage?: string;
 };
 
-function debounce<T extends (...args: any[]) => any>(
+function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -33,12 +33,10 @@ const ToggleFilterBg = ({ id, bgImage, onToggle }: FilterOption & { onToggle: (i
   });
   
   // Debounce the toggle handler
-  const debouncedToggle = React.useCallback(
-    debounce((id: string) => {
-      onToggle(id);
-    }, 100),
-    [onToggle]
-  );
+  const debouncedToggle = React.useCallback((id: string) => {
+    const handler = () => onToggle(id);
+    debounce(handler, 100)();
+  }, [onToggle]);
   
   return (
     <motion.div 

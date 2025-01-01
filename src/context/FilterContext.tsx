@@ -1,57 +1,49 @@
 // src/context/FilterContext.tsx
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useTransition, useState } from 'react';
 
 // Define types for our context
 interface FilterContextType {
-  selectedFilters: string[];
+  selectedFilters: Set<string>;
   toggleFilter: (filterId: string) => void;
+  isPending: boolean;
   isFilterActive: (filterId: string) => boolean;
-  clearFilters: () => void;
 }
 
 // Create the context
-const FilterContext = createContext<FilterContextType | undefined>(undefined);
+export const FilterContext = createContext<FilterContextType>({} as FilterContextType);
 
 // Provider component
 export function FilterProvider({ children }: { children: React.ReactNode }) {
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<Set<string>>(new Set());
+  const [isPending, startTransition] = useTransition();
 
-  // Toggle filter function
   const toggleFilter = useCallback((filterId: string) => {
+    // Handle UI state immediately
     setSelectedFilters(prev => {
-      // If filter is already selected, remove it
-      if (prev.includes(filterId)) {
-        console.log(`Removing filter: ${filterId}`);
-        return prev.filter(id => id !== filterId);
+      const next = new Set(prev);
+      if (next.has(filterId)) {
+        next.delete(filterId);
+      } else {
+        next.add(filterId);
       }
-      // If filter is not selected, add it
-      console.log(`Adding filter: ${filterId}`);
-      return [...prev, filterId];
+      return next;
+    });
+
+    // Handle data operations in a transition
+    startTransition(() => {
+      // Data filtering operations here
     });
   }, []);
 
-  // Check if a filter is active
-  const isFilterActive = useCallback((filterId: string) => {
-    return selectedFilters.includes(filterId);
-  }, [selectedFilters]);
-
-  // Clear all filters
-  const clearFilters = useCallback(() => {
-    console.log('Clearing all filters');
-    setSelectedFilters([]);
-  }, []);
-
   return (
-    <FilterContext.Provider 
-      value={{ 
-        selectedFilters, 
-        toggleFilter, 
-        isFilterActive, 
-        clearFilters 
-      }}
-    >
+    <FilterContext.Provider value={{ 
+      selectedFilters, 
+      toggleFilter,
+      isPending,
+      isFilterActive: useCallback((id: string) => selectedFilters.has(id), [selectedFilters])
+    }}>
       {children}
     </FilterContext.Provider>
   );
