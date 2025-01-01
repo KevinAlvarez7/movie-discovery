@@ -3,7 +3,8 @@
 import { TMDBResponse } from '@/types/TMDBMovie';
 import { NextResponse } from 'next/server';
 
-// First, let's add better logging
+const providerIds = [8, 337, 9]; // Netflix, Disney, Prime
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = Number(searchParams.get('page')) || 1;
@@ -13,21 +14,16 @@ export async function GET(request: Request) {
     console.log(`Fetching movies for page ${page}`);
     
     const movieResponse = await fetch(
-      `https://api.themoviedb.org/3/movie/popular?page=${page}&api_key=${apiKey}`
+      `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_watch_providers=${providerIds.join('|')}&watch_region=US&page=${page}`
     );
     const movieData: TMDBResponse = await movieResponse.json();
     
     const moviesWithProviders = await Promise.all(
       movieData.results.map(async (movie) => {
-        console.log(`Fetching providers for movie: ${movie.title}`);
-        
         const providerResponse = await fetch(
           `https://api.themoviedb.org/3/movie/${movie.id}/watch/providers?api_key=${apiKey}`
         );
         const providerData = await providerResponse.json();
-        
-        // Log provider data
-        console.log(`Provider data for ${movie.title}:`, providerData?.results?.US);
         
         const usProviders = providerData.results?.US;
         
@@ -39,8 +35,6 @@ export async function GET(request: Request) {
         };
       })
     );
-
-    console.log('First movie with providers:', moviesWithProviders[0]);
     
     return NextResponse.json({ 
       movies: moviesWithProviders, 

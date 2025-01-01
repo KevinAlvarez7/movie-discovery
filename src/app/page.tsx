@@ -23,11 +23,11 @@ export default function Home() {
   const { addToShortlist, shortlistedMovies } = useMovieContext();
   const cardDimensions = useCardDimensions();
 
-  const { selectedFilters } = useFilters();
+  const { selectedFilter } = useFilters();
   
   // Create filtered movies list
   const filteredMovies = useMemo(() => {
-    console.log('Filtering movies with filters:', selectedFilters);
+    console.log('Filtering movies with filters:', selectedFilter);
     
     return movies.filter(movie => {
       // Debug log to see the actual movie data
@@ -38,22 +38,22 @@ export default function Home() {
       });
       
       const providers = movie.providers?.flatrate;
-      const matches = matchesSelectedProviders(providers, selectedFilters);
+      const matches = matchesSelectedProviders(providers, selectedFilter ? [selectedFilter] : []);
       
       console.log(`Movie: ${movie.title}, Matches filters: ${matches}`, {
         providers,
-        selectedFilters,
+        selectedFilter,
         providerIds: providers?.map(p => p.provider_id)
       });
       
       return matches;
     });
-  }, [movies, selectedFilters]);
+  }, [movies, selectedFilter]);
 
   // Add an effect to log filter changes
   useEffect(() => {
-    console.log('Selected filters changed:', selectedFilters);
-  }, [selectedFilters]);
+    console.log('Selected filters changed:', selectedFilter);
+  }, [selectedFilter]);
 
   useEffect(() => {
     async function fetchInitialMovies() {
@@ -89,7 +89,11 @@ export default function Home() {
         noiseOpacity={0.02}
         noiseSize={240}
         className="min-h-screen flex flex-col flex-1">
-          <StreamingFilters/>      
+          <div className="w-full flex flex-col items-center mt-5 justify-center gap-2">
+            <h3 className="text-[#f1fafa] text-lg font-handwritten"> Popular movies streaming on:</h3>
+            <StreamingFilters/>  
+          </div>
+    
         <div className="h-full flex flex-col justify-center items-center relative">
           {initialLoading ? ( // Only show skeleton on initial load
             <div className="flex justify-center">

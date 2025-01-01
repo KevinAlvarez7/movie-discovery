@@ -34,6 +34,13 @@ export default function RootLayout({
     // Apply the variables at the HTML level
     <html lang="en" className={`${outfit.variable} ${handwritten.variable}`}>
       {/* Apply Outfit as the base font */}
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="[first-movie-poster-url]"
+        />
+      </head>
       <body 
         className={outfit.className}
         {...(mounted ? {} : { suppressHydrationWarning: true })}

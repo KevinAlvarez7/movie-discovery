@@ -3,9 +3,10 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
+
 // Define types for our context
 interface FilterContextType {
-  selectedFilters: string[];
+  selectedFilter: string | null;
   toggleFilter: (filterId: string) => void;
   isFilterActive: (filterId: string) => boolean;
   clearFilters: () => void;
@@ -16,37 +17,27 @@ const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
 // Provider component
 export function FilterProvider({ children }: { children: React.ReactNode }) {
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
-  // Toggle filter function
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+
   const toggleFilter = useCallback((filterId: string) => {
-    setSelectedFilters(prev => {
-      // If filter is already selected, remove it
-      if (prev.includes(filterId)) {
-        console.log(`Removing filter: ${filterId}`);
-        return prev.filter(id => id !== filterId);
-      }
-      // If filter is not selected, add it
-      console.log(`Adding filter: ${filterId}`);
-      return [...prev, filterId];
-    });
+    setSelectedFilter(prevFilter => prevFilter === filterId ? null : filterId);
   }, []);
-
-  // Check if a filter is active
+  
   const isFilterActive = useCallback((filterId: string) => {
-    return selectedFilters.includes(filterId);
-  }, [selectedFilters]);
+    return selectedFilter === filterId;
+  }, [selectedFilter]);
 
   // Clear all filters
   const clearFilters = useCallback(() => {
     console.log('Clearing all filters');
-    setSelectedFilters([]);
+    setSelectedFilter(null);
   }, []);
 
   return (
     <FilterContext.Provider 
       value={{ 
-        selectedFilters, 
+        selectedFilter, 
         toggleFilter, 
         isFilterActive, 
         clearFilters 

@@ -1,7 +1,6 @@
-// src/components/MovieCard.tsx
 "use client";
 
-import React, { JSX, useEffect } from 'react';
+import React, { JSX, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import StarRating from '../UI/StarRating';
@@ -22,36 +21,60 @@ interface MovieCardProps {
   };
 }
 
-const MovieCard = ({ title, poster_path, voteAverage, providers }: MovieCardProps): JSX.Element => {
+const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: MovieCardProps): JSX.Element => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
   // Generate random tilt once when component mounts
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
-  
-  // Generate provider tilts once when component mounts
   const providerTilts = React.useMemo(() => 
     Array(3).fill(0).map(() => Math.random() * 12 - 6)
   , []);
 
-  // Log providers for debugging
-  useEffect(() => {
-    console.log(`Providers for ${title}:`, providers);
-  }, [title, providers]);
+  // Handle image load/error events
+  const handleImageLoad = useCallback(() => {
+    console.log(`Image loaded for: ${title}`);
+    setIsImageLoaded(true);
+  }, [title]);
+
+  const handleImageError = useCallback(() => {
+    console.log(`Image error for: ${title}`);
+    setImageError(true);
+  }, [title]);
 
   return (
-    <motion.div className="w-full h-full flex justify-center items-center rounded-xl">
+    <motion.div 
+      className="w-full h-full flex justify-center items-center rounded-xl"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="w-full h-full relative overflow-hidden">
+        {/* Poster Image with loading state */}
         <div className="absolute inset-0">
-          {poster_path && (
+          {!imageError && poster_path && (
             <Image
-              src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+              src={poster_path}
               alt={title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover rounded-xl"
-              priority
+              width={500}
+              height={750}
+              priority={true}
+              loading="eager"
+              className="object-cover rounded-xl transition-opacity duration-300"
+              sizes="(max-width: 768px) 100vw, 500px"
+              quality={75}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
             />
           )}
+          
+          {/* Fallback/placeholder while loading or on error */}
+          {(!isImageLoaded || imageError) && (
+            <div className="absolute inset-0 bg-gray-900 animate-pulse rounded-xl" />
+          )}
         </div>
-        {/* Providers Container */}
+
+        {/* Streaming Provider Logos */}
         {providers?.flatrate && providers.flatrate.length > 0 && (
           <div className="absolute right-3 top-4 z-20 flex gap-3">
             {providers.flatrate.slice(0, 3).map((provider, index) => (
@@ -66,41 +89,47 @@ const MovieCard = ({ title, poster_path, voteAverage, providers }: MovieCardProp
                   width={24}
                   height={24}
                   className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px]"
+                  loading="lazy"
                 />
               </div>
             ))}
           </div>
         )}
-        {/* Apply transform rotate to content container */}
-        <div className="absolute inset-0 flex items-end justify-center pb-4" style={{ transform: `rotate(${tiltAngle}deg)` }}>
+
+        {/* Movie Info Overlay */}
+        <div 
+          className="absolute inset-0 flex items-end justify-center pb-4" 
+          style={{ transform: `rotate(${tiltAngle}deg)`}}
+        >
           <div className="w-fit flex flex-row items-center mx-4 mb-4 overflow-visible">
-          <TornContainer>
-            <NoiseBackground
-              noiseSize={120}
-              noiseOpacity={0.12}
-              baseColor="#f1fafa"
-              baseOpacity={0.7}
-              className="w-fit flex flex-col justify-center p-6 gap-4 backdrop-blur-sm"
-            >
-              <h3 className='flex-row justify-center items-center w-auto font-handwritten font-bold inline-flex text-black text-lg'>{title}</h3>
-              <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2">
-                <p className="m-0 font-handwritten">Rating: </p>
-                <StarRating 
-                  rating={voteAverage}
-                  size={24}
-                  className=""
-                />
-                <span className='font-handwritten'>({voteAverage.toFixed(1)})</span>
-              </div>
-            </NoiseBackground>
-          </TornContainer>
-
+            <TornContainer>
+              <NoiseBackground
+                noiseSize={120}
+                noiseOpacity={0.12}
+                baseColor="#f1fafa"
+                baseOpacity={0.7}
+                className="w-fit flex flex-col justify-center p-6 gap-4 backdrop-blur-sm"
+              >
+                <h3 className='flex-row justify-center items-center w-auto font-handwritten font-bold inline-flex text-black text-lg'>
+                  {title}
+                </h3>
+                <div className="text-slate-800 text-sm flex flex-row justify-center items-center w-auto gap-2">
+                  <p className="m-0 font-handwritten">Rating: </p>
+                  <StarRating 
+                    rating={voteAverage}
+                    size={24}
+                  />
+                  <span className='font-handwritten'>({voteAverage.toFixed(1)})</span>
+                </div>
+              </NoiseBackground>
+            </TornContainer>
+          </div>
         </div>
-
-      </div>
       </div>
     </motion.div>
   );
-};
+});
+
+MovieCard.displayName = 'MovieCard';
 
 export default MovieCard;
