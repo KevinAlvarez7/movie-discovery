@@ -109,7 +109,9 @@ const MovieCarousel = ({
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDrag}
               animate={{
-                scale: absoluteIndex === currentIndex ? 1 : 0.9,
+                scale: Math.abs(absoluteIndex - currentIndex) <= 1 
+                  ? (absoluteIndex === currentIndex ? 1 : 0.9)
+                  : 0.8,
                 filter: absoluteIndex === currentIndex ? 'brightness(1)' : 'brightness(0.7)',
                 boxShadow: absoluteIndex === currentIndex 
                   ? '0 0 16px 0px rgba(0, 0, 0, 0.3)' 
@@ -117,7 +119,7 @@ const MovieCarousel = ({
               }}
               transition={{
                 type: "spring",
-                stiffness: 100,
+                stiffness: 50,
                 damping: 10,
                 mass: 0.8,
                 duration: 0.3
