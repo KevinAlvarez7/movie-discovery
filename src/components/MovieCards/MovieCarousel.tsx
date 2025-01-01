@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, PanInfo } from "framer-motion";
+import { motion } from "framer-motion";
 import MovieCard from './MovieCard';
 import { Movie } from '../../types/TMDBMovie';
 import { useCardDimensions } from '../../hooks/useCardDimensions';
@@ -65,15 +65,6 @@ const MovieCarousel = ({
     setCurrentIndex((prev) => prev === 0 ? prev : prev - 1);
   };
 
-  // Handle drag gesture
-  const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (info.offset.x > 100) {
-      handlePrev();
-    } else if (info.offset.x < -100) {
-      handleNext();
-    }
-  };
-
   // Notify parent of current movie change
   useEffect(() => {
     if (initialMovies[currentIndex]) {
@@ -111,7 +102,6 @@ const MovieCarousel = ({
                 height: cardDimensions.isMobile ? '85%' : `${cardDimensions.cardHeight}px`,
                 position: 'absolute',
                 left: '50%',
-                visibility: isVisible ? 'visible' : 'hidden'
               }}
               initial={{ 
                 x: `calc(${isNewCard ? viewportWidth : -viewportWidth}px - 50%)`,
@@ -130,16 +120,28 @@ const MovieCarousel = ({
                   : '0 0 8px 0px rgba(0, 0, 0, 0.1)'
               }}
               drag="x"
-              dragElastic={0.01}
-              dragConstraints={{ left: 0, right: 0 }}
-              onDragEnd={handleDrag}
+              dragElastic={0.1}
+              dragConstraints={{ left: 0, right: 0}}
+              onDragEnd={(event, info) => {
+                if (Math.abs(info.offset.x) > 100) {
+                  if (info.offset.x > 0) {
+                    handlePrev();
+                  } else {
+                    handleNext();
+                  }
+                } else {
+                  // Snap back to center if drag distance is less than 100px
+                  const centerX = `-50%`;
+                  info.point.x = parseFloat(centerX);
+                }
+              }}
               transition={{
                 x: {
                   type: "spring",
-                  stiffness: 100,
-                  damping: 20,
+                  stiffness: 150,
+                  damping: 30,
                   mass: 0.8,
-                  duration: 1
+                  duration: 0.3,
                 },
                 opacity: {
                   duration: 0.3
