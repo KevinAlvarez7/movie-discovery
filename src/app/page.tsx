@@ -26,29 +26,20 @@ export default function Home() {
   const { selectedFilter } = useFilters();
   
   // Create filtered movies list
-  const filteredMovies = useMemo(() => {
-    console.log('Filtering movies with filters:', selectedFilter);
-    
-    return movies.filter(movie => {
-      // Debug log to see the actual movie data
-      console.log('Movie data:', {
-        title: movie.title,
-        providers: movie.providers,
-        rawProviders: movie.providers?.flatrate
-      });
-      
-      const providers = movie.providers?.flatrate;
-      const matches = matchesSelectedProviders(providers, selectedFilter ? [selectedFilter] : []);
-      
-      console.log(`Movie: ${movie.title}, Matches filters: ${matches}`, {
-        providers,
-        selectedFilter,
-        providerIds: providers?.map(p => p.provider_id)
-      });
-      
-      return matches;
-    });
-  }, [movies, selectedFilter]);
+ // In page.tsx
+const filteredMovies = useMemo(() => {
+  console.log('Filtering movies:', {
+    totalMovies: movies.length,
+    selectedFilter
+  });
+  
+  if (!selectedFilter) return movies; // Return all movies if no filter
+  
+  return movies.filter(movie => {
+    const providers = movie.providers?.flatrate;
+    return matchesSelectedProviders(providers, [selectedFilter]);
+  });
+}, [movies, selectedFilter]);
 
   // Add an effect to log filter changes
   useEffect(() => {
