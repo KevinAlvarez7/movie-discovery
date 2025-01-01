@@ -82,7 +82,7 @@ const MovieCarousel = ({
   }, [currentIndex, initialMovies, onCurrentMovieChange, windowOffset]);
 
   return (
-    <div className="relative w-full h-full overflow-visible px-4 py-4 md:py-6">
+    <div className="relative w-full h-full overflow-visible px-4 md:py-6">
       <div 
         className="flex items-center h-full transition-transform duration-300 ease-out"
         style={{

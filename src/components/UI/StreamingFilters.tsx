@@ -89,7 +89,7 @@ const StreamingFilters = () => {
   }, [selectedFilter, toggleFilter]);
 
   return (
-    <div className="w-full flex flex-row items-center justify-center py-4">      
+    <div className="w-full flex flex-row items-center justify-center">      
       <div className="flex flex-row gap-2 space-x-4 px-4 overflow-visible">
         <AnimatePresence>
           {bgFilters.map((filter) => (
