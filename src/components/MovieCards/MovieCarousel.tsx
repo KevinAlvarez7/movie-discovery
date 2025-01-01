@@ -45,15 +45,19 @@ const MovieCarousel = ({
     };
   }, [currentIndex, initialMovies]);
 
-  // Handle navigation
+  // Add effect for loading more movies
+  useEffect(() => {
+    if (currentIndex >= initialMovies.length - WINDOW_SIZE && !isLoading) {
+      console.log('Loading more movies...');
+      onLoadMore();
+    }
+  }, [currentIndex, initialMovies.length, isLoading, onLoadMore]);
+
+  // Modify handleNext to remove direct onLoadMore call
   const handleNext = () => {
-    setCurrentIndex((prev) => {
-      if (prev >= initialMovies.length - WINDOW_SIZE && !isLoading) {
-        console.log('Loading more movies...');
-        onLoadMore();
-      }
-      return prev === initialMovies.length - 1 ? prev : prev + 1;
-    });
+    setCurrentIndex((prev) => 
+      prev === initialMovies.length - 1 ? prev : prev + 1
+    );
   };
 
   const handlePrev = () => {
