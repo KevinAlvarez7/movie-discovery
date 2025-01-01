@@ -12,41 +12,63 @@ type FilterOption = {
   bgImage?: string;
 };
 
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
 const ToggleFilterBg = ({ id, bgImage, onToggle }: FilterOption & { onToggle: (id: string) => void }) => {
   const { isFilterActive } = useFilters();
   const isSelected = isFilterActive(id);
   
-  // Store animation values in a ref to persist across re-renders
   const animationRef = React.useRef({
     tiltAngle: Math.random() * 12 - 2,
     initialScale: 1,
   });
   
+  // Debounce the toggle handler
+  const debouncedToggle = React.useCallback(
+    debounce((id: string) => {
+      onToggle(id);
+    }, 100),
+    [onToggle]
+  );
+  
   return (
     <motion.div 
+      layoutId={`filter-${id}`}
       className="bg-[#d0d0d0] m-1 p-1 w-full h-full rounded-full overflow-hidden flex items-center justify-center"
-      initial={{ 
-        rotate: 0,
-        scale: animationRef.current.initialScale 
+      style={{ 
+        willChange: 'transform, opacity',
+        contain: 'layout',
+        transform: 'translateZ(0)', // Force GPU acceleration
       }}
+      initial={false} // Skip initial animation
       animate={{ 
         rotate: isSelected ? animationRef.current.tiltAngle : 0,
         scale: isSelected ? 1.2 : animationRef.current.initialScale,
         boxShadow: isSelected ? '2px 4px 10px rgba(0, 0, 0, 1)' : '2px 4px 2px rgba(0, 0, 0, 1)',
       }}
       transition={{ 
-        duration: 0.3,
-        type: "spring",
-        stiffness: 200,
-        damping: 15
+        duration: 0.15,
+        type: "tween",
+        ease: "easeOut",
+        layoutX: { duration: 0.15 },
+        layoutY: { duration: 0.15 },
       }}
       whileHover={{ 
         scale: animationRef.current.initialScale * 1.01,
-        transition: { duration: 0.2 }
+        transition: { duration: 0.1 }
       }}
     >
       <button 
-        onClick={() => onToggle(id)}
+        onClick={() => debouncedToggle(id)}
         className="rounded-full overflow-hidden h-11"
       >
         <Image 
