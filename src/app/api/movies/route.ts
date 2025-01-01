@@ -8,9 +8,9 @@ export async function GET(request: Request) {
     `https://api.themoviedb.org/3/movie/popular?page=${page}`,
     {
       headers: {
-        'Authorization': `Bearer ${process.env.TMDB_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+        'Authorization': `?api_key=${process.env.TMDB_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
     }
   );
 
