@@ -27,34 +27,27 @@ const TornContainer: React.FC<TornContainerProps> = ({ children, className = '' 
     return () => observer.disconnect();
   }, []);
 
-  const generateJaggedPath = () => {
+  const jaggedPath = React.useMemo(() => {
     const { width, height } = dimensions;
     if (!width || !height) return '';
-
+  
     const segments = 50;
     const jaggedness = Math.min(width, height) * 0.1;
-    
     const getRandom = () => (Math.random() - 0.65) * jaggedness;
-
-    const path = [
+  
+    return [
       `M 0 0`,
-      // Top edge (straight)
       `L ${width} 0`,
-      // Right edge (jagged)
       ...Array(segments).fill(0).map((_, i) => 
         `L ${width + getRandom()} ${(i + 1) * (height / segments)}`
       ),
-      // Bottom edge (straight)
       `L ${width} ${height} L 0 ${height}`,
-      // Left edge (jagged)
       ...Array(segments).fill(0).map((_, i) => 
         `L ${getRandom()} ${height - ((i + 1) * (height / segments))}`
       ),
       'Z'
     ].join(' ');
-
-    return path;
-  };
+  }, [dimensions]);
 
   return (
     <div ref={containerRef} className=" w-full h-full">
@@ -69,7 +62,7 @@ const TornContainer: React.FC<TornContainerProps> = ({ children, className = '' 
       >
         <defs>
           <clipPath id={maskId}>
-            <path d={generateJaggedPath()} />
+            <path d={jaggedPath} />
           </clipPath>
         </defs>
       </svg>

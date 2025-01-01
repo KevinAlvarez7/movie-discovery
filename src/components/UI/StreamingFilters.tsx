@@ -12,26 +12,26 @@ type FilterOption = {
   bgImage?: string;
 };
 
-const ToggleFilterBg = ({
-  id,
-  bgImage,
-  onToggle
-}: FilterOption & {
-  onToggle: (id: string) => void;
-}) => {
-  // Use the context to check if filter is selected
+const ToggleFilterBg = ({ id, bgImage, onToggle }: FilterOption & { onToggle: (id: string) => void }) => {
   const { isFilterActive } = useFilters();
   const isSelected = isFilterActive(id);
   
-  // Keep your existing memo for tilt
-  const tiltAngle = React.useMemo(() => Math.random() * 12 - 2, []);
-
+  // Store animation values in a ref to persist across re-renders
+  const animationRef = React.useRef({
+    tiltAngle: Math.random() * 12 - 2,
+    initialScale: 1,
+  });
+  
   return (
     <motion.div 
       className="bg-[#d0d0d0] m-1 p-1 w-full h-full rounded-full overflow-hidden flex items-center justify-center"
+      initial={{ 
+        rotate: 0,
+        scale: animationRef.current.initialScale 
+      }}
       animate={{ 
-        rotate: isSelected ? tiltAngle : 0,
-        scale: isSelected ? 1.2 : 1,
+        rotate: isSelected ? animationRef.current.tiltAngle : 0,
+        scale: isSelected ? 1.2 : animationRef.current.initialScale,
         boxShadow: isSelected ? '2px 4px 10px rgba(0, 0, 0, 1)' : '2px 4px 2px rgba(0, 0, 0, 1)',
       }}
       transition={{ 
@@ -41,7 +41,7 @@ const ToggleFilterBg = ({
         damping: 15
       }}
       whileHover={{ 
-        scale: 1.01,
+        scale: animationRef.current.initialScale * 1.01,
         transition: { duration: 0.2 }
       }}
     >

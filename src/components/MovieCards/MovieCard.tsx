@@ -22,9 +22,14 @@ interface MovieCardProps {
   };
 }
 
-const MovieCard = ({ title, poster_path, voteAverage, movieId, providers }: MovieCardProps): JSX.Element => {
-  // Generate random tilt between -2 and 2 degrees for content container
+const MovieCard = ({ title, poster_path, voteAverage, providers }: MovieCardProps): JSX.Element => {
+  // Generate random tilt once when component mounts
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
+  
+  // Generate provider tilts once when component mounts
+  const providerTilts = React.useMemo(() => 
+    Array(3).fill(0).map(() => Math.random() * 12 - 6)
+  , []);
 
   // Log providers for debugging
   useEffect(() => {
@@ -49,24 +54,21 @@ const MovieCard = ({ title, poster_path, voteAverage, movieId, providers }: Movi
         {/* Providers Container */}
         {providers?.flatrate && providers.flatrate.length > 0 && (
           <div className="absolute right-3 top-4 z-20 flex gap-3">
-            {providers.flatrate.slice(0, 3).map((provider) => {
-              const providerTilt = Math.random() * 12 - 6;
-              return (
-                <div 
-                  key={provider.provider_id}
-                  className="bg-[#f1fafa] p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
-                  style={{ transform: `rotate(${providerTilt}deg)`}} 
-                >
-                  <Image
-                    src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                    alt={provider.provider_name}
-                    width={24}
-                    height={24}
-                    className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px]"
-                  />
-                </div>
-              );
-            })}
+            {providers.flatrate.slice(0, 3).map((provider, index) => (
+              <div 
+                key={provider.provider_id}
+                className="bg-[#f1fafa] p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                style={{ transform: `rotate(${providerTilts[index]}deg)`}} 
+              >
+                <Image
+                  src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
+                  alt={provider.provider_name}
+                  width={24}
+                  height={24}
+                  className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px]"
+                />
+              </div>
+            ))}
           </div>
         )}
         {/* Apply transform rotate to content container */}
