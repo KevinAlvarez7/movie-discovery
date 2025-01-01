@@ -101,7 +101,7 @@ const MovieCarousel = ({
                 height: cardDimensions.isMobile ? '85%' : `${cardDimensions.cardHeight}px`,
               }}
               drag="x"
-              dragElastic={0.1}
+              dragElastic={0.01}
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDrag}
               animate={{
@@ -112,9 +112,11 @@ const MovieCarousel = ({
                   : '0 0 8px 0px rgba(0, 0, 0, 0.1)'
               }}
               transition={{
-                type: "tween",
-                duration: 0.2,
-                ease: "easeOut"
+                type: "spring",
+                stiffness: 100,
+                damping: 10,
+                mass: 0.8,
+                duration: 0.3
               }}
             >
               <div className="w-full h-full rounded-2xl overflow-hidden">
