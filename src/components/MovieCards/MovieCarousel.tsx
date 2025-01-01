@@ -1,7 +1,7 @@
 // src/components/MovieCarousel.tsx
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, PanInfo } from "framer-motion";
 import MovieCard from './MovieCard';
 import { Movie } from '../../types/TMDBMovie';
@@ -22,6 +22,7 @@ const MovieCarousel = ({
   isLoading,
   onCurrentMovieChange 
 }: MovieCarouselProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const cardDimensions = useCardDimensions();
 
@@ -88,14 +89,19 @@ const MovieCarousel = ({
   return (
     <div className="relative w-full h-full overflow-visible px-4 md:py-6">
       <div 
-        className="flex items-center h-full transition-transform duration-300 ease-out"
+        ref={containerRef}
+        className="flex items-center h-full justify-center"
         style={{
           gap: `${cardDimensions.gapWidth}px`,
-          transform: `translateX(calc(50% - ${(currentIndex - windowOffset) * cardDimensions.cardWidth}px - ${(currentIndex - windowOffset) * cardDimensions.gapWidth}px - ${cardDimensions.cardWidth / 2}px))`,
         }}
       >
         {visibleMovies.map((movie, index) => {
           const absoluteIndex = index + windowOffset;
+          const position = absoluteIndex - currentIndex;
+          const isVisible = Math.abs(position) <= 2;
+          const isNewCard = position > 0;
+          const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
+          
           return (
             <motion.div
               key={`${movie.id}-${absoluteIndex}`}
@@ -103,26 +109,54 @@ const MovieCarousel = ({
               style={{
                 width: `${cardDimensions.cardWidth}px`,
                 height: cardDimensions.isMobile ? '85%' : `${cardDimensions.cardHeight}px`,
+                position: 'absolute',
+                left: '50%',
+                visibility: isVisible ? 'visible' : 'hidden'
+              }}
+              initial={{ 
+                x: `calc(${isNewCard ? viewportWidth : -viewportWidth}px - 50%)`,
+                opacity: 0,
+                scale: 0.8
+              }}
+              animate={{
+                x: `calc(${position * (cardDimensions.cardWidth + 20)}px - 50%)`,
+                scale: Math.abs(position) <= 1 
+                  ? (position === 0 ? 1 : 0.9)
+                  : 0.8,
+                filter: position === 0 ? 'brightness(1)' : 'brightness(0.7)',
+                opacity: isVisible ? 1 : 0,
+                boxShadow: position === 0
+                  ? '0 0 16px 0px rgba(0, 0, 0, 0.3)' 
+                  : '0 0 8px 0px rgba(0, 0, 0, 0.1)'
               }}
               drag="x"
               dragElastic={0.01}
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDrag}
-              animate={{
-                scale: Math.abs(absoluteIndex - currentIndex) <= 1 
-                  ? (absoluteIndex === currentIndex ? 1 : 0.9)
-                  : 0.8,
-                filter: absoluteIndex === currentIndex ? 'brightness(1)' : 'brightness(0.7)',
-                boxShadow: absoluteIndex === currentIndex 
-                  ? '0 0 16px 0px rgba(0, 0, 0, 0.3)' 
-                  : '0 0 8px 0px rgba(0, 0, 0, 0.1)'
-              }}
               transition={{
-                type: "spring",
-                stiffness: 50,
-                damping: 10,
-                mass: 0.8,
-                duration: 0.3
+                x: {
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 20,
+                  mass: 0.8,
+                  duration: 1
+                },
+                opacity: {
+                  duration: 0.3
+                },
+                scale: {
+                  duration: 0.3
+                },
+                filter: {
+                  duration: 0.2
+                },
+                default: {
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 10,
+                  mass: 0.8,
+                  duration: 0.3
+                }
               }}
             >
               <div className="w-full h-full rounded-2xl overflow-hidden">
