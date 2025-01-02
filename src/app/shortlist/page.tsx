@@ -65,13 +65,13 @@ export default function ShortlistPage() {
         ) : (
           <motion.div
             className="flex flex-row overflow-x-auto gap-6 p-4 pb-8 snap-x snap-mandatory
-                       justify-center items-center mx-auto w-full flex-grow"
+                       items-center w-full flex-grow"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
               WebkitOverflowScrolling: 'touch',
-              paddingLeft: `max(2rem, calc((100% - ${cardWidth}px) / 2))`,
-              paddingRight: `max(2rem, calc((100% - ${cardWidth}px) / 2))`
+              paddingLeft: `max(2rem, calc((100vw - ${cardWidth}px) / 2))`,
+              paddingRight: `max(2rem, calc((100vw - ${cardWidth}px) / 2))`
             }}
             variants={container}
             initial="hidden"
@@ -81,7 +81,7 @@ export default function ShortlistPage() {
               <motion.div
                 key={movie.id}
                 variants={item}
-                className="flex-none snap-center"
+                className="flex-none snap-center first:ml-0"
                 style={{ 
                   width: `${cardWidth}px`,
                   aspectRatio: '2/3'
@@ -89,7 +89,7 @@ export default function ShortlistPage() {
               >
                 <MovieCard
                   title={movie.title}
-                  poster_path={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
+                  poster_path={movie.poster_path}
                   voteAverage={movie.vote_average}
                   movieId={movie.id}
                   providers={movie.providers}
