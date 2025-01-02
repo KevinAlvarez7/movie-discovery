@@ -13,7 +13,7 @@ import { useCardDimensions } from '@/hooks/useCardDimensions';
 export default function ShortlistPage() {
   const router = useRouter();
   const { shortlistedMovies } = useMovieContext();
-  const { cardWidth } = useCardDimensions();
+  const { cardWidth, cardHeight, isMobile } = useCardDimensions();
   
   // Animation variants for list items
   const container = {
@@ -57,11 +57,20 @@ export default function ShortlistPage() {
 
         {/* Movie List */}
         {shortlistedMovies.length === 0 ? (
-          <div className="flex flex-col items-center justify-center flex-grow">
-            <p className="text-white/50 font-handwritten text-lg">
-              No movies shortlisted yet
-            </p>
-          </div>
+        <div className="flex flex-row items-center justify-center h-full">
+            <div 
+              className="rounded-2xl border-4 border-white/5 flex flex-col items-center justify-center"
+              style={{ 
+                width: `${cardWidth}px`,
+                height: isMobile ? '85%' : `${cardHeight}px`,
+              }}
+            >
+                <p className="text-white/50 font-handwritten text-lg">
+                No movies shortlisted yet
+                </p>
+            </div>
+        </div>
+
         ) : (
           <motion.div
             className="flex flex-row overflow-x-auto gap-6 p-4 pb-8 snap-x snap-mandatory
@@ -84,6 +93,7 @@ export default function ShortlistPage() {
                 className="flex-none snap-center first:ml-0"
                 style={{ 
                   width: `${cardWidth}px`,
+                  height: isMobile ? '85%' : `${cardHeight}px`,
                   aspectRatio: '2/3'
                 }}
               >

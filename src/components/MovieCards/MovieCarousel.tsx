@@ -177,18 +177,26 @@ const MovieCarousel = ({
         })}
       </div>
 
-      {!isMobile && (
-        <>
+      {!isMobile && initialMovies.length > 0 && (
+        <motion.div 
+          key="navigation-buttons"
+          initial={{ opacity: 0, scale: 0.95, y: "-50%" }}
+          animate={{ opacity: 1, scale: 1, y: "-50%" }}
+          exit={{ opacity: 0, scale: 0.95, y: "-50%" }}
+          transition={{ type: "spring", stiffness: 50, damping: 15 }}
+          className="absolute top-1/2 w-full"
+        >
           <motion.button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            initial={{ y: "-50%" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             whileHover={{ 
               rotate: -2, 
               scale: 1.05,
               borderColor: "#D9D9D9",
               color: "#ffffff",
-              y: "-50%",
               boxShadow: "0 0 16px 20px rgba(0, 0, 0, 0.1)"
             }}
             whileTap={{ scale: 0.95, y: "-50%" }}
@@ -205,13 +213,14 @@ const MovieCarousel = ({
           <motion.button
             onClick={handleNext}
             disabled={currentIndex === initialMovies.length - 1}
-            initial={{ y: "-50%" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1}}
+            exit={{ opacity: 0 }}
             whileHover={{ 
               rotate: 2, 
               scale: 1.05,
               borderColor: "#D9D9D9",
               color: "#ffffff",
-              y: "-50%",
               boxShadow: "0 0 16px 20px rgba(0, 0, 0, 0.1)"
             }}
             whileTap={{ scale: 0.95, y: "-50%" }}
@@ -225,7 +234,7 @@ const MovieCarousel = ({
             <span className="text-md">Next</span>
             <ChevronRight size={24} className='-rotate-6' />
           </motion.button>
-        </>
+        </motion.div>
       )}
     </div>
   );

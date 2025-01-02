@@ -186,7 +186,7 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, movieId, provid
                 noiseOpacity={0.12}
                 baseColor="#f1fafa"
                 baseOpacity={0.7}
-                className="w-fit flex flex-col justify-center p-6 gap-4 backdrop-blur-sm rounded-xl"
+                className="w-fit flex flex-col justify-center p-4 sm:p-6 gap-4 backdrop-blur-sm rounded-xl"
               >
                 <h3 className="flex-row justify-center items-center w-auto font-handwritten font-bold inline-flex text-black text-lg">
                   {title}

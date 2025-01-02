@@ -31,7 +31,7 @@ const ShortlistButton = ({ width }: ShortlistButtonProps) => {
     }}
     >
       <motion.button
-        className={`flex items-center justify-center gap-2 p-4 rounded-t-2xl 
+        className={`flex border-t-2 border-x-2 border-white/10 items-center justify-center gap-2 p-4 rounded-t-2xl 
                    bg-black/20 backdrop-blur-sm shadow-2xl font-handwritten
                    transition-colors duration-200`}
         style={{ width: `${width}px` }}
@@ -39,26 +39,26 @@ const ShortlistButton = ({ width }: ShortlistButtonProps) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <motion.div
-          key={shortlistedMovies.length}
-          initial={{ scale: 1, rotate: 0 }}
-          animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [-6, 2, -6],
-          }}
-          transition={{ 
-            duration: 0.5,
-            type: "spring",
-            stiffness: 300,
-            damping: 10,
-            times: [0, 0.5, 1]
-          }}
-        >
-          <Bookmark 
-            className={shortlistedMovies.length === 0 ? "text-white" : "text-yellow-500"}
-            fill={shortlistedMovies.length === 0 ? "none" : "currentColor"} 
-          />
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={shortlistedMovies.length+1}
+            initial={{ scale: 1 }}
+            animate={{ 
+              scale: 1.2
+            }}
+            transition={{ 
+              type: "spring",
+              stiffness: 500,
+              damping: 7,
+              mass: 0.5
+            }}
+          >
+            <Bookmark 
+              className={shortlistedMovies.length === 0 ? "text-white w-5 h-5" : "text-yellow-500 w-5 h-5"}
+              fill={shortlistedMovies.length === 0 ? "none" : "currentColor"} 
+            />
+          </motion.div>
+        </AnimatePresence>
 
         <span className="flex items-center gap-2">
         

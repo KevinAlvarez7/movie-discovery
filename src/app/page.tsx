@@ -5,11 +5,8 @@ import MovieCarousel from '../components/MovieCards/MovieCarousel';
 import MovieCardSkeleton from '../components/MovieCards/MovieCardSkeleton';
 import { fetchMoviesWithProviders } from '../lib/tmdb';
 import { Movie } from '../types/TMDBMovie';
-// import { useMovieContext } from '../context/MovieContext';
-// In src/app/page.tsx
 import { NoiseBackground } from '../components/UI/NoiseBackground';  // Changed from @/components/ui/NoiseBackground
 import StreamingFilters from '../components/UI/StreamingFilters';    // Changed from @/components/ui/StreamingFilters
-// import { useCardDimensions } from '../hooks/useCardDimensions';
 import { useFilters } from '../context/FilterContext';
 import { matchesSelectedProviders } from '../utils/providerMapping';
 import { useCardDimensions } from '../hooks/useCardDimensions';
