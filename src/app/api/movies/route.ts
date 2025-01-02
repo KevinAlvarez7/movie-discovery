@@ -36,9 +36,13 @@ export async function GET(request: Request) {
       })
     );
     
-    return NextResponse.json({ 
+    return new Response(JSON.stringify({ 
       movies: moviesWithProviders, 
       total_pages: movieData.total_pages 
+    }), {
+      headers: {
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+      },
     });
   } catch (error) {
     console.error('Error fetching data:', error);

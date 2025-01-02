@@ -81,7 +81,7 @@ const filteredMovies = useMemo(() => {
         noiseSize={240}
         className="h-full flex flex-col flex-1">
           <div className="w-full flex flex-col items-center mt-10 justify-center gap-4">
-            <h3 className="text-[#f1fafa] text-lg font-handwritten">Popular movies streaming on:</h3>
+            <h3 className="text-[#f1fafa] text-lg font-handwritten">Select a platform to watch:</h3>
             <StreamingFilters/>  
           </div>
     

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { JSX, useState, useCallback } from 'react';
+import React, { JSX, useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import StarRating from '../UI/StarRating';
@@ -19,26 +19,64 @@ interface MovieCardProps {
       logo_path: string;
     }>;
   };
+  priority?: boolean;
+  loading?: 'eager' | 'lazy';
 }
 
-const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: MovieCardProps): JSX.Element => {
+const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, priority, loading }: MovieCardProps): JSX.Element => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  
+  const [isMobile, setIsMobile] = useState(false);
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
   const providerTilts = React.useMemo(() => 
     Array(3).fill(0).map(() => Math.random() * 12 - 6)
   , []);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 480);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Debounced keyboard handler
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    // Prevent default behavior for arrow keys
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+      event.preventDefault();
+    }
+  }, []);
+
+  // Add passive event listener for better performance
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress, { passive: false });
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleKeyPress]);
+
+  // Use requestAnimationFrame for smooth animations
+  const updateImageState = useCallback(() => {
+    requestAnimationFrame(() => {
+      setIsImageLoaded(true);
+    });
+  }, []);
+
   const handleImageLoad = useCallback(() => {
-    console.log(`Image loaded for: ${title}`);
     setIsImageLoaded(true);
-  }, [title]);
+  }, []);
 
   const handleImageError = useCallback(() => {
-    console.log(`Image error for: ${title}`);
     setImageError(true);
-  }, [title]);
+  }, []);
+
+  // Generate a tiny thumbnail version (like Instagram's 10x10 blurred preview)
+  const tinyThumbPath = poster_path ? 
+    `https://image.tmdb.org/t/p/w45${poster_path}` : ''; // Tiny 45px width image
+  
+  const fullImagePath = poster_path ? 
+    `https://image.tmdb.org/t/p/${isMobile ? 'w342' : 'w500'}${poster_path}` : '';
 
   return (
     <motion.div 
@@ -47,48 +85,49 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers }: Mo
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="w-full h-full relative overflow-hidden">
-        <div className="absolute inset-0">
-          {!imageError && poster_path && (
-            <Image
-              src={poster_path}
-              alt={title}
-              width={500}
-              height={750}
-              priority={false}
-              loading="lazy"
-              className={`
-                h-full w-full object-cover rounded-xl 
-                transition-opacity duration-300
-                ${isImageLoaded ? 'opacity-100' : 'opacity-0'}
-              `}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              quality={75}
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-            />
-          )}
-          
-          {(!isImageLoaded || imageError) && (
-            <div className="absolute inset-0 bg-gray-900 animate-pulse rounded-xl" />
-          )}
-        </div>
+      <div className="relative w-full h-full overflow-hidden">
+        {/* Tiny blurred thumbnail (Instagram-like effect) */}
+        <div
+          className="absolute inset-0 transform scale-110"
+          style={{
+            backgroundImage: `url(${tinyThumbPath})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(20px)',
+            opacity: isImageLoaded ? 0 : 1,
+            transition: 'opacity 0.3s ease-in-out'
+          }}
+        />
 
-        {/* Streaming Provider Logos */}
+        {/* Main image */}
+        <Image
+          src={fullImagePath}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className={`object-cover rounded-2xl transition-opacity duration-300 w-auto h-full select-none pointer-events-none ${
+            isImageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+          quality={85}
+          loading={priority ? "eager" : "lazy"}
+        />
+
+        {/* Provider logos */}
         {providers?.flatrate && providers.flatrate.length > 0 && (
           <div className="absolute right-3 top-4 z-20 flex gap-3">
-            {providers.flatrate.slice(0, 3).map((provider, index) => (
+            {providers.flatrate.slice(0, 3).map((provider) => (
               <div 
                 key={provider.provider_id}
                 className="bg-[#f1fafa] p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
-                style={{ transform: `rotate(${providerTilts[index]}deg)`}} 
               >
                 <Image
                   src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
                   alt={provider.provider_name}
-                  width={24}
-                  height={24}
-                  className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px]"
+                  width={40}
+                  height={40}
+                  className="rounded-lg sm:rounded-xl w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] object-contain"
                   loading="lazy"
                 />
               </div>

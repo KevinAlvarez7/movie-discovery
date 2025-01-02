@@ -1,7 +1,7 @@
 // src/components/MovieCarousel.tsx
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion } from "framer-motion";
 import MovieCard from './MovieCard';
 import { Movie } from '../../types/TMDBMovie';
@@ -25,55 +25,53 @@ const MovieCarousel = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const cardDimensions = useCardDimensions();
+  const { isMobile } = cardDimensions;
 
-  // Calculate visible window
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => 
+      prev === initialMovies.length - 1 ? prev : prev + 1
+    );
+  }, [initialMovies.length]);
+
+  const handlePrev = useCallback(() => {
+    setCurrentIndex((prev) => prev === 0 ? prev : prev - 1);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        handlePrev();
+      } else if (event.key === 'ArrowRight') {
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleNext, handlePrev]);
+
   const { visibleMovies, windowOffset } = useMemo(() => {
     const centerOffset = Math.floor(WINDOW_SIZE / 2);
     const startIdx = Math.max(0, currentIndex - centerOffset);
     const endIdx = Math.min(startIdx + WINDOW_SIZE, initialMovies.length);
     
-    console.log('Window calculation:', {
-      currentIndex,
-      startIdx,
-      endIdx,
-      windowSize: endIdx - startIdx,
-      totalMovies: initialMovies.length
-    });
-
     return {
       visibleMovies: initialMovies.slice(startIdx, endIdx),
       windowOffset: startIdx
     };
   }, [currentIndex, initialMovies]);
 
-  // Add effect for loading more movies
   useEffect(() => {
     if (currentIndex >= initialMovies.length - WINDOW_SIZE && !isLoading) {
-      console.log('Loading more movies...');
       onLoadMore();
     }
   }, [currentIndex, initialMovies.length, isLoading, onLoadMore]);
 
-  // Modify handleNext to remove direct onLoadMore call
-  const handleNext = () => {
-    setCurrentIndex((prev) => 
-      prev === initialMovies.length - 1 ? prev : prev + 1
-    );
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => prev === 0 ? prev : prev - 1);
-  };
-
-  // Notify parent of current movie change
   useEffect(() => {
     if (initialMovies[currentIndex]) {
       onCurrentMovieChange?.(initialMovies[currentIndex]);
-      console.log('Current movie updated:', {
-        title: initialMovies[currentIndex].title,
-        index: currentIndex,
-        windowOffset
-      });
     }
   }, [currentIndex, initialMovies, onCurrentMovieChange, windowOffset]);
 
@@ -102,6 +100,10 @@ const MovieCarousel = ({
                 height: cardDimensions.isMobile ? '85%' : `${cardDimensions.cardHeight}px`,
                 position: 'absolute',
                 left: '50%',
+                transform: 'translateZ(0)',
+                willChange: 'transform',
+                containIntrinsicSize: `${cardDimensions.cardWidth}px ${cardDimensions.cardHeight}px`,
+                contain: 'layout'
               }}
               initial={{ 
                 x: `calc(${isNewCard ? viewportWidth : -viewportWidth}px - 50%)`,
@@ -119,7 +121,7 @@ const MovieCarousel = ({
                   ? '0 0 16px 0px rgba(0, 0, 0, 0.3)' 
                   : '0 0 8px 0px rgba(0, 0, 0, 0.1)'
               }}
-              drag="x"
+              drag={isMobile ? "x" : false}
               dragElastic={0.1}
               dragConstraints={{ left: 0, right: 0}}
               onDragEnd={(event, info) => {
@@ -129,10 +131,6 @@ const MovieCarousel = ({
                   } else {
                     handleNext();
                   }
-                } else {
-                  // Snap back to center if drag distance is less than 100px
-                  const centerX = `-50%`;
-                  info.point.x = parseFloat(centerX);
                 }
               }}
               transition={{
@@ -164,16 +162,42 @@ const MovieCarousel = ({
               <div className="w-full h-full rounded-2xl overflow-hidden">
                 <MovieCard 
                   {...movie}
-                  poster_path={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
+                  poster_path={movie.poster_path ? 
+                    `https://image.tmdb.org/t/p/${!isMobile ? 'w780' : 'w500'}${movie.poster_path}` : ''}
                   voteAverage={movie.vote_average || 0}
                   movieId={movie.id}
                   providers={movie.providers}
+                  priority={Math.abs(position) <= 1}
+                  loading={Math.abs(position) <= 2 ? 'eager' : 'lazy'}
                 />
               </div>
             </motion.div>
           );
         })}
       </div>
+
+      {!isMobile && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            className="p-2 mx-2 rounded-full bg-black/20 
+                     text-white/70 hover:text-white disabled:opacity-30
+                     transition-opacity"
+          >
+            Left
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={currentIndex === initialMovies.length - 1}
+            className="p-2 mx-2 rounded-full bg-black/20 
+                     text-white/70 hover:text-white disabled:opacity-30
+                     transition-opacity"
+          >
+            Right
+          </button>
+        </div>
+      )}
     </div>
   );
 };
