@@ -6,6 +6,7 @@ interface CardDimensions {
   cardHeight: number;
   gapWidth: number;
   isMobile: boolean;
+  isLoaded: boolean;
 }
 
 export const useCardDimensions = () => {
@@ -14,7 +15,8 @@ export const useCardDimensions = () => {
     cardWidth: 0,
     cardHeight: 0,
     gapWidth: 24,
-    isMobile: false
+    isMobile: false,
+    isLoaded: false
   });
 
   useEffect(() => {
@@ -35,7 +37,8 @@ export const useCardDimensions = () => {
           cardWidth,
           cardHeight,
           gapWidth: 8,
-          isMobile: true
+          isMobile: true,
+          isLoaded: true
         });
       } else {
         // For desktop, use 70% of viewport height
@@ -52,7 +55,8 @@ export const useCardDimensions = () => {
           cardWidth: finalWidth,
           cardHeight: finalHeight,
           gapWidth: Math.min(Math.max(8, vw * 0.05), 12),
-          isMobile: false
+          isMobile: false,
+          isLoaded: true
         });
       }
     };

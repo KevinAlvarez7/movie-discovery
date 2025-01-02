@@ -30,7 +30,7 @@ const ToggleFilterBg = React.memo(({
   return (
     <motion.div 
       layoutId={`filter-${id}`}
-      className="bg-[#d0d0d0] m-1 p-1 w-full h-full rounded-full overflow-hidden flex items-center justify-center"
+      className="bg-[#d0d0d0] m-1 p-1 w-fit h-fit rounded-full overflow-hidden flex items-center justify-center"
       style={{ 
         willChange: 'transform, opacity',
         transform: 'translateZ(0)',
@@ -99,8 +99,9 @@ const StreamingFilters = () => {
   }, [selectedFilter, toggleFilter]);
 
   return (
-    <div className="w-full flex flex-row items-center justify-center">      
-      <div className="flex flex-row gap-2 space-x-4 px-4 overflow-visible">
+    <div className="w-full flex flex-col items-center justify-center gap-2">
+      <h3 className="text-[#f1fafa] text-lg font-handwritten">Select a platform to watch:</h3>
+      <div className="flex flex-row gap-2 space-x-4 px-2 overflow-visible">
         <AnimatePresence>
           {bgFilters.map((filter) => (
             <ToggleFilterBg

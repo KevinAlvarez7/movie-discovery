@@ -5,6 +5,8 @@ import "./globals.css";
 import { MovieProvider } from '../context/MovieContext';
 import { useEffect, useState } from 'react';
 import { FilterProvider } from '../context/FilterContext';
+import { AnimatePresence } from 'framer-motion';
+import PageLoader from '@/components/PageLoader';
 
 // Font configuration - remove the className property as it's not valid
 const outfit = Outfit({ 
@@ -25,9 +27,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -41,11 +52,17 @@ export default function RootLayout({
         className={outfit.className}
         {...(mounted ? {} : { suppressHydrationWarning: true })}
       >
-        <FilterProvider>
-          <MovieProvider>
-            {children}
-          </MovieProvider>
-        </FilterProvider>
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <PageLoader key="loader" />
+          ) : (
+            <FilterProvider>
+              <MovieProvider>
+                {children}
+              </MovieProvider>
+            </FilterProvider>
+          )}
+        </AnimatePresence>
       </body>
     </html>
   );

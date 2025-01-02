@@ -74,7 +74,7 @@ const ShortlistButton = ({ width }: ShortlistButtonProps) => {
             </motion.span>
           </AnimatePresence>
           {shortlistedMovies.length === 0 
-            ? "Shortlisted Movie"
+            ? "Shortlisted Movies"
             : shortlistedMovies.length === 1
             ? "Shortlisted Movie"
             : "Shortlisted Movies"}

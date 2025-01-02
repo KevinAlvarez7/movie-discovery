@@ -9,7 +9,7 @@ const MovieCardSkeleton = () => {
   return (
     <motion.div>
       <div 
-        className="bg-black/20 border-4 border-white/5 rounded-xl shadow-md overflow-hidden flex flex-col"
+        className="bg-black/20 border-4 border-white/5 rounded-2xl shadow-md overflow-hidden flex flex-col animate-pulse"
         style={{
           width: `${cardWidth}px`,
           height: isMobile ? '85%' : `${cardHeight}px`,

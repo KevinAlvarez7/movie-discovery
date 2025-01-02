@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import MovieCard from './MovieCard';
 import { Movie } from '../../types/TMDBMovie';
 import { useCardDimensions } from '../../hooks/useCardDimensions';
@@ -25,8 +25,7 @@ const MovieCarousel = ({
 }: MovieCarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const cardDimensions = useCardDimensions();
-  const { isMobile } = cardDimensions;
+  const { cardWidth, cardHeight, isMobile, isLoaded } = useCardDimensions();
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => 
@@ -82,7 +81,7 @@ const MovieCarousel = ({
         ref={containerRef}
         className="flex items-center h-full justify-center"
         style={{
-          gap: `${cardDimensions.gapWidth}px`,
+          gap: `${cardWidth}px`,
         }}
       >
         {visibleMovies.map((movie, index) => {
@@ -97,13 +96,13 @@ const MovieCarousel = ({
               key={`${movie.id}-${absoluteIndex}`}
               className="flex-shrink-0 h-full rounded-2xl flex flex-col"
               style={{
-                width: `${cardDimensions.cardWidth}px`,
-                height: cardDimensions.isMobile ? '85%' : `${cardDimensions.cardHeight}px`,
+                width: `${cardWidth}px`,
+                height: isMobile ? '85%' : `${cardHeight}px`,
                 position: 'absolute',
                 left: '50%',
                 transform: 'translateZ(0)',
                 willChange: 'transform',
-                containIntrinsicSize: `${cardDimensions.cardWidth}px ${cardDimensions.cardHeight}px`,
+                containIntrinsicSize: `${cardWidth}px ${cardHeight}px`,
                 contain: 'layout'
               }}
               initial={{ 
@@ -112,7 +111,7 @@ const MovieCarousel = ({
                 scale: 0.8
               }}
               animate={{
-                x: `calc(${position * (cardDimensions.cardWidth + 20)}px - 50%)`,
+                x: `calc(${position * (cardWidth + 20)}px - 50%)`,
                 scale: Math.abs(position) <= 1 
                   ? (position === 0 ? 1 : 0.9)
                   : 0.8,
@@ -177,65 +176,68 @@ const MovieCarousel = ({
         })}
       </div>
 
-      {!isMobile && initialMovies.length > 0 && (
-        <motion.div 
-          key="navigation-buttons"
-          initial={{ opacity: 0, scale: 0.95, y: "-50%" }}
-          animate={{ opacity: 1, scale: 1, y: "-50%" }}
-          exit={{ opacity: 0, scale: 0.95, y: "-50%" }}
-          transition={{ type: "spring", stiffness: 50, damping: 15 }}
-          className="absolute top-1/2 w-full"
-        >
-          <motion.button
-            onClick={handlePrev}
-            disabled={currentIndex === 0}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            whileHover={{ 
-              rotate: -2, 
-              scale: 1.05,
-              borderColor: "#D9D9D9",
-              color: "#ffffff",
-              boxShadow: "0 0 16px 20px rgba(0, 0, 0, 0.1)"
-            }}
-            whileTap={{ scale: 0.95, y: "-50%" }}
+      <AnimatePresence mode="wait">
+        {isLoaded && !isMobile && initialMovies.length > 0 && (
+          <motion.div 
+            key="navigation-buttons"
+            initial={{ opacity: 0, scale: 0.5, y: "-50%" }}
+            animate={{ opacity: 1, scale: 1, y: "-50%" }}
+            exit={{ opacity: 0, scale: 0.95, y: "-50%" }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            className="font-handwritten absolute left-8 top-1/2 z-10
-                      flex flex-row items-center gap-1 py-3 px-4
-                      rounded-full border-[#a1a1a1] border-4 bg-[#221F1F] backdrop-blur-sm
-                      text-[#a1a1a1] disabled:opacity-10
-                      transition-opacity"
+            className="absolute top-1/2 w-full"
           >
-            <ChevronLeft size={24} className='rotate-6' />
-            <span className="text-md">Prev</span>
-          </motion.button>
-          <motion.button
-            onClick={handleNext}
-            disabled={currentIndex === initialMovies.length - 1}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1}}
-            exit={{ opacity: 0 }}
-            whileHover={{ 
-              rotate: 2, 
-              scale: 1.05,
-              borderColor: "#D9D9D9",
-              color: "#ffffff",
-              boxShadow: "0 0 16px 20px rgba(0, 0, 0, 0.1)"
-            }}
-            whileTap={{ scale: 0.95, y: "-50%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            className="font-handwritten absolute right-8 top-1/2 z-10
-                      flex flex-row items-center gap-1 py-3 px-4
-                      rounded-full border-[#a1a1a1] border-4 bg-[#221F1F] backdrop-blur-sm
-                      text-[#a1a1a1] disabled:opacity-10
-                      transition-opacity"
-          >
-            <span className="text-md">Next</span>
-            <ChevronRight size={24} className='-rotate-6' />
-          </motion.button>
-        </motion.div>
-      )}
+            <motion.button
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: currentIndex === 0 ? 0.1 : 1 }}
+              whileHover={{ 
+                rotate: currentIndex === 0 ? 0 : -2,
+                scale: currentIndex === 0 ? 1 : 1.05,
+                borderColor: currentIndex === 0 ? "#a1a1a1" : "#D9D9D9",
+                color: currentIndex === 0 ? "#a1a1a1" : "#ffffff",
+                boxShadow: currentIndex === 0 ? "none" : "0 0 16px 20px rgba(0, 0, 0, 0.1)"
+              }}
+              whileTap={{ 
+                scale: currentIndex === 0 ? 1 : 0.95 
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="font-handwritten absolute left-8 top-1/2 z-10
+                        flex flex-row items-center gap-1 py-3 px-4
+                        rounded-full border-[#a1a1a1] border-4 bg-[#221F1F] backdrop-blur-sm
+                        text-[#a1a1a1] disabled:opacity-10
+                        transition-opacity"
+            >
+              <ChevronLeft size={24} className='rotate-6' />
+              <span className="text-md">Prev</span>
+            </motion.button>
+            <motion.button
+              onClick={handleNext}
+              disabled={currentIndex === initialMovies.length - 1}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1}}
+              exit={{ opacity: 0 }}
+              whileHover={{ 
+                rotate: 2, 
+                scale: 1.05,
+                borderColor: "#D9D9D9",
+                color: "#ffffff",
+                boxShadow: "0 0 16px 20px rgba(0, 0, 0, 0.1)"
+              }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="font-handwritten absolute right-8 top-1/2 z-10
+                        flex flex-row items-center gap-1 py-3 px-4
+                        rounded-full border-[#a1a1a1] border-4 bg-[#221F1F] backdrop-blur-sm
+                        text-[#a1a1a1] disabled:opacity-10
+                        transition-opacity"
+            >
+              <span className="text-md">Next</span>
+              <ChevronRight size={24} className='-rotate-6' />
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
