@@ -23,14 +23,10 @@ interface MovieCardProps {
   loading?: 'eager' | 'lazy';
 }
 
-const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, priority, loading }: MovieCardProps): JSX.Element => {
+const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, priority }: MovieCardProps): JSX.Element => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
-  const providerTilts = React.useMemo(() => 
-    Array(3).fill(0).map(() => Math.random() * 12 - 6)
-  , []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -56,19 +52,8 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, prio
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
-  // Use requestAnimationFrame for smooth animations
-  const updateImageState = useCallback(() => {
-    requestAnimationFrame(() => {
-      setIsImageLoaded(true);
-    });
-  }, []);
-
   const handleImageLoad = useCallback(() => {
     setIsImageLoaded(true);
-  }, []);
-
-  const handleImageError = useCallback(() => {
-    setImageError(true);
   }, []);
 
   // Generate a tiny thumbnail version (like Instagram's 10x10 blurred preview)
@@ -109,7 +94,6 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, prio
             isImageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           onLoad={handleImageLoad}
-          onError={handleImageError}
           quality={85}
           loading={priority ? "eager" : "lazy"}
         />
@@ -147,7 +131,7 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, prio
                 noiseOpacity={0.12}
                 baseColor="#f1fafa"
                 baseOpacity={0.7}
-                className="w-fit flex flex-col justify-center p-6 gap-4 backdrop-blur-sm"
+                className="w-fit flex flex-col justify-center p-6 gap-4 backdrop-blur-sm rounded-xl"
               >
                 <h3 className="flex-row justify-center items-center w-auto font-handwritten font-bold inline-flex text-black text-lg">
                   {title}

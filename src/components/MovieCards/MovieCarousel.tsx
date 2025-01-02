@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import MovieCard from './MovieCard';
 import { Movie } from '../../types/TMDBMovie';
 import { useCardDimensions } from '../../hooks/useCardDimensions';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const WINDOW_SIZE = 5; // Show 5 cards at a time (can adjust based on performance)
 
@@ -177,26 +178,54 @@ const MovieCarousel = ({
       </div>
 
       {!isMobile && (
-        <div className="flex justify-center mt-4">
-          <button
+        <>
+          <motion.button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className="p-2 mx-2 rounded-full bg-black/20 
-                     text-white/70 hover:text-white disabled:opacity-30
-                     transition-opacity"
+            initial={{ y: "-50%" }}
+            whileHover={{ 
+              rotate: -2, 
+              scale: 1.05,
+              borderColor: "#D9D9D9",
+              color: "#ffffff",
+              y: "-50%",
+              boxShadow: "0 0 16px 20px rgba(0, 0, 0, 0.1)"
+            }}
+            whileTap={{ scale: 0.95, y: "-50%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            className="font-handwritten absolute left-8 top-1/2 z-10
+                      flex flex-row items-center gap-1 py-3 px-4
+                      rounded-full border-[#a1a1a1] border-4 bg-[#221F1F] backdrop-blur-sm
+                      text-[#a1a1a1] disabled:opacity-10
+                      transition-opacity"
           >
-            Left
-          </button>
-          <button
+            <ChevronLeft size={24} className='rotate-6' />
+            <span className="text-md">Prev</span>
+          </motion.button>
+          <motion.button
             onClick={handleNext}
             disabled={currentIndex === initialMovies.length - 1}
-            className="p-2 mx-2 rounded-full bg-black/20 
-                     text-white/70 hover:text-white disabled:opacity-30
-                     transition-opacity"
+            initial={{ y: "-50%" }}
+            whileHover={{ 
+              rotate: 2, 
+              scale: 1.05,
+              borderColor: "#D9D9D9",
+              color: "#ffffff",
+              y: "-50%",
+              boxShadow: "0 0 16px 20px rgba(0, 0, 0, 0.1)"
+            }}
+            whileTap={{ scale: 0.95, y: "-50%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            className="font-handwritten absolute right-8 top-1/2 z-10
+                      flex flex-row items-center gap-1 py-3 px-4
+                      rounded-full border-[#a1a1a1] border-4 bg-[#221F1F] backdrop-blur-sm
+                      text-[#a1a1a1] disabled:opacity-10
+                      transition-opacity"
           >
-            Right
-          </button>
-        </div>
+            <span className="text-md">Next</span>
+            <ChevronRight size={24} className='-rotate-6' />
+          </motion.button>
+        </>
       )}
     </div>
   );

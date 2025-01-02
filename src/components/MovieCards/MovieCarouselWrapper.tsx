@@ -3,10 +3,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import MovieCarousel from './MovieCarousel';
 import { Movie } from '@/types/TMDBMovie';
-import { useMovieContext } from '@/context/MovieContext';
-import { useCardDimensions } from '@/hooks/useCardDimensions';
 import { matchesSelectedProviders } from '../../utils/providerMapping';
 import { useFilters } from '@/context/FilterContext';
+import { fetchMoviesWithProviders } from '../../utils/api';
 
 interface MovieCarouselWrapperProps {
   initialMovies: Movie[];

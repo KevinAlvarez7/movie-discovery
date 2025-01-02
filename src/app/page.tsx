@@ -12,18 +12,23 @@ import StreamingFilters from '../components/UI/StreamingFilters';    // Changed 
 // import { useCardDimensions } from '../hooks/useCardDimensions';
 import { useFilters } from '../context/FilterContext';
 import { matchesSelectedProviders } from '../utils/providerMapping';
+import { useCardDimensions } from '../hooks/useCardDimensions';
+import { useMovieContext } from '../context/MovieContext';
+import ShortlistButton from '../components/UI/ShortListButton';
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  // const [setCurrentMovie] = useState<Movie | null>(null);
+  const [currentMovie, setCurrentMovie] = useState<Movie | null>(null);
   
   // const { addToShortlist, shortlistedMovies } = useMovieContext();
   // const cardDimensions = useCardDimensions();
 
   const { selectedFilter } = useFilters();
+  const cardDimensions = useCardDimensions();
+  const { addToShortlist } = useMovieContext();
   
   // Create filtered movies list
  // In page.tsx
@@ -97,30 +102,14 @@ const filteredMovies = useMemo(() => {
             initialMovies={filteredMovies} // Changed from movies to filteredMovies
             onLoadMore={loadMoreMovies} 
             isLoading={isLoadingMore}
-            // onCurrentMovieChange={setCurrentMovie}
+            onCurrentMovieChange={setCurrentMovie}
           />
           )}
         </div>
         {/* Shortlist controls - only shown when a movie is selected */}
-        {/* {currentMovie && (
-          <>
-            <div className="w-full flex flex-row justify-center items-center mt-2 px-5">
-              <div 
-                className={`flex items-center justify-center gap-2 p-1 rounded-t-md bg-black/10 backdrop-blur-sm shadow-[0_0px_12px_0px_rgba(0,0,0,0.5)]`}
-                style={{ width: `${cardDimensions.cardWidth}px` }}
-              >
-                <div className="w-full flex flex-row items-center justify-center gap-2">
-                  <button
-                    onClick={() => addToShortlist(currentMovie)}
-                    className="p-2 rounded-full text-white/50 hover:text-white font-handwritten text-sm w-auto"
-                  >
-                    <span> {shortlistedMovies.length} Shortlisted</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
-        )} */}
+        {currentMovie && (
+          <ShortlistButton width={cardDimensions.cardWidth} />
+        )}
       </NoiseBackground>
     </main>
   );
