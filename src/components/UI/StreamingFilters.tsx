@@ -23,7 +23,7 @@ const ToggleFilterBg = React.memo(({
   const isSelected = isFilterActive(id);
   
   const animationValues = useMemo(() => ({
-    tiltAngle: Math.random() * 12 - 2,
+    tiltAngle: Math.random() * 12 - 6,
     initialScale: 1,
   }), []);
 
@@ -42,6 +42,16 @@ const ToggleFilterBg = React.memo(({
         rotate: isSelected ? animationValues.tiltAngle : 0,
         scale: isSelected ? 1.2 : animationValues.initialScale,
         boxShadow: isSelected ? '2px 4px 10px rgba(0, 0, 0, 1)' : '2px 4px 2px rgba(0, 0, 0, 1)',
+      }}
+      whileHover={{
+        scale: 1.2,
+        rotate: animationValues.tiltAngle,
+        boxShadow: "4px 4px 12px rgba(0, 0, 0, 0.5)"
+      }}
+      whileTap={{
+        scale: 1,
+        rotate: animationValues.tiltAngle,
+        boxShadow: "1px 1px 4px rgba(0, 0, 0, 1)"
       }}
       transition={{ 
         type: "spring",

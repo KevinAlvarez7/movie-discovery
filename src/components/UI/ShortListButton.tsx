@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useMovieContext } from '@/context/MovieContext';
-import { BookmarkPlus } from 'lucide-react';
 
 interface ShortlistButtonProps {
   width: number;
@@ -21,22 +20,46 @@ const ShortlistButton = ({ width }: ShortlistButtonProps) => {
   return (
     <motion.div 
       className="w-full flex flex-row justify-center items-center mt-2 px-5"
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ 
+        type: "spring",
+        stiffness: 100,
+        damping: 10,
+        duration: 0.3 
+    }}
     >
       <motion.button
-        className={`flex items-center justify-center gap-2 p-4 rounded-md 
-                   bg-black/10 backdrop-blur-sm shadow-lg hover:bg-black/20
+        className={`flex items-center justify-center gap-2 p-4 rounded-t-2xl 
+                   bg-black/20 backdrop-blur-sm shadow-2xl font-handwritten
                    transition-colors duration-200`}
         style={{ width: `${width}px` }}
         onClick={handleNavigateToShortlist}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={{
+            scale: 1.05,
+            boxShadow: "0 0 12px rgba(0, 0, 0, 0.3)",
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 15
+            }
+        }}
+        whileTap={{
+            scale: 0.98,
+            boxShadow: "0 0 4px rgba(0, 0, 0, 0.9)",
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 15
+            }
+        }}
       >
-        <BookmarkPlus className="w-5 h-5 text-white/70" />
-        <span className="font-handwritten text-white/70">
-          {shortlistedMovies.length} Shortlisted
+        <span>
+          {shortlistedMovies.length === 0 ? 
+            `View Shortlisted Movies` :
+            shortlistedMovies.length === 1 ?
+            `View ${shortlistedMovies.length} Shortlisted Movie` :
+            `View ${shortlistedMovies.length} Shortlisted Movies`}
         </span>
       </motion.button>
     </motion.div>

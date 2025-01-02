@@ -8,10 +8,12 @@ import { useMovieContext } from '@/context/MovieContext';
 import MovieCard from '@/components/MovieCards/MovieCard';
 import { NoiseBackground } from '@/components/UI/NoiseBackground';
 import { ArrowLeft } from 'lucide-react';
+import { useCardDimensions } from '@/hooks/useCardDimensions';
 
 export default function ShortlistPage() {
   const router = useRouter();
   const { shortlistedMovies } = useMovieContext();
+  const { cardWidth } = useCardDimensions();
   
   // Animation variants for list items
   const container = {
@@ -30,12 +32,12 @@ export default function ShortlistPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-950">
+    <main className="h-screen bg-gray-950 flex flex-col">
       <NoiseBackground
         baseColor="#221F1F"
         noiseOpacity={0.02}
         noiseSize={240}
-        className="min-h-screen p-4"
+        className="h-full flex flex-col"
       >
         {/* Header */}
         <div className="w-full flex items-center justify-between p-4">
@@ -55,14 +57,22 @@ export default function ShortlistPage() {
 
         {/* Movie List */}
         {shortlistedMovies.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[60vh]">
+          <div className="flex flex-col items-center justify-center flex-grow">
             <p className="text-white/50 font-handwritten text-lg">
               No movies shortlisted yet
             </p>
           </div>
         ) : (
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4"
+            className="flex flex-row overflow-x-auto gap-6 p-4 pb-8 snap-x snap-mandatory
+                       justify-center items-center mx-auto w-full flex-grow"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch',
+              paddingLeft: `max(2rem, calc((100% - ${cardWidth}px) / 2))`,
+              paddingRight: `max(2rem, calc((100% - ${cardWidth}px) / 2))`
+            }}
             variants={container}
             initial="hidden"
             animate="show"
@@ -71,7 +81,11 @@ export default function ShortlistPage() {
               <motion.div
                 key={movie.id}
                 variants={item}
-                className="w-full aspect-[2/3]"
+                className="flex-none snap-center"
+                style={{ 
+                  width: `${cardWidth}px`,
+                  aspectRatio: '2/3'
+                }}
               >
                 <MovieCard
                   title={movie.title}

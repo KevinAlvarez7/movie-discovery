@@ -13,7 +13,7 @@ import StreamingFilters from '../components/UI/StreamingFilters';    // Changed 
 import { useFilters } from '../context/FilterContext';
 import { matchesSelectedProviders } from '../utils/providerMapping';
 import { useCardDimensions } from '../hooks/useCardDimensions';
-import { useMovieContext } from '../context/MovieContext';
+// import { useMovieContext } from '../context/MovieContext';
 import ShortlistButton from '../components/UI/ShortListButton';
 
 export default function Home() {
@@ -28,7 +28,7 @@ export default function Home() {
 
   const { selectedFilter } = useFilters();
   const cardDimensions = useCardDimensions();
-  const { addToShortlist } = useMovieContext();
+  // const { addToShortlist } = useMovieContext();
   
   // Create filtered movies list
  // In page.tsx
@@ -106,7 +106,7 @@ const filteredMovies = useMemo(() => {
           />
           )}
         </div>
-        {/* Shortlist controls - only shown when a movie is selected */}
+
         {currentMovie && (
           <ShortlistButton width={cardDimensions.cardWidth} />
         )}

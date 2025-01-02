@@ -6,6 +6,9 @@ import Image from 'next/image';
 import StarRating from '../UI/StarRating';
 import { NoiseBackground } from '../UI/NoiseBackground';
 import { TornContainer } from '../UI/TornContainer';
+import { useMovieContext } from '@/context/MovieContext';
+import { Bookmark } from 'lucide-react';
+
 
 interface MovieCardProps {
   title: string;
@@ -23,10 +26,15 @@ interface MovieCardProps {
   loading?: 'eager' | 'lazy';
 }
 
-const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, priority }: MovieCardProps): JSX.Element => {
+const MovieCard = React.memo(({ title, poster_path, voteAverage, movieId, providers, priority }: MovieCardProps): JSX.Element => {
+  const { addToShortlist, isMovieShortlisted } = useMovieContext();
+  const isShortlisted = isMovieShortlisted(movieId);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const tiltAngle = React.useMemo(() => Math.random() * 6 - 3, []);
+  const providerRotations = React.useMemo(() => 
+    Array(3).fill(0).map(() => Math.random() * 12 - 6), // Random rotation between -6 and 6 degrees
+  []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -97,14 +105,61 @@ const MovieCard = React.memo(({ title, poster_path, voteAverage, providers, prio
           quality={85}
           loading={priority ? "eager" : "lazy"}
         />
-
+          <NoiseBackground
+            noiseSize={120}
+            noiseOpacity={0.12}
+            baseColor="#000000"
+            baseOpacity={1}
+          >
+          <motion.button
+            className="absolute left-3 top-4 z-20 border-4 sm:border-4 border-white 
+                      p-[8px] rounded-2xl 
+                      bg-transparent"
+            initial={{ 
+              rotate: -6,
+              boxShadow: "2px 2px 4px rgba(0,0,0, 0.5)"
+            }}
+            animate={{ 
+              rotate: -6,
+              backgroundColor: isShortlisted ? "rgba(225,225,225, 1)" : "rgba(215, 215, 215, 0.8)",
+              boxShadow: isShortlisted ? "1px 1px 4px rgba(0,0,0, 0.9)" : "2px 2px 4px rgba(0,0,0, 0.5)",
+              transition: { type: "spring", stiffness: 300 }
+            }}
+            whileHover={{ 
+              scale: 1.1,
+              rotate: 6,
+              boxShadow: "4px 4px 12px rgba(0, 0, 0, 0.5)"
+            }}
+            whileTap={{ 
+              scale: 0.9,
+              rotate: -12,
+              boxShadow: "1px 1px 4px rgba(0, 0, 0, 1)"
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              addToShortlist({
+                id: movieId,
+                title,
+                poster_path,
+                vote_average: voteAverage,
+                providers
+              });
+            }}
+          >
+            <Bookmark 
+              className={`w-6 h-6 ${isShortlisted ? 'text-yellow-500' : 'text-gray-500'}`} 
+              fill={isShortlisted ? "currentColor" : "none"} 
+            />
+          </motion.button>
+          </NoiseBackground>
         {/* Provider logos */}
         {providers?.flatrate && providers.flatrate.length > 0 && (
           <div className="absolute right-3 top-4 z-20 flex gap-3">
-            {providers.flatrate.slice(0, 3).map((provider) => (
+            {providers.flatrate.slice(0, 3).map((provider, index) => (
               <div 
                 key={provider.provider_id}
                 className="bg-[#f1fafa] p-[3px] sm:p-[4px] rounded-xl sm:rounded-2xl drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                style={{ transform: `rotate(${providerRotations[index]}deg)` }}
               >
                 <Image
                   src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
