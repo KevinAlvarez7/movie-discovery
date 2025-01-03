@@ -32,7 +32,7 @@ export default function ShortlistPage() {
   };
 
   return (
-    <main className="h-screen bg-gray-950 flex flex-col">
+    <main className="h-[100dvh] bg-gray-950 flex flex-col">
       <NoiseBackground
         baseColor="#221F1F"
         noiseOpacity={0.02}
@@ -50,7 +50,7 @@ export default function ShortlistPage() {
             <ArrowLeft className="w-5 h-5" />
             <span className="font-handwritten">Back</span>
           </motion.button>
-          <h1 className="font-handwritten text-xl text-white/70">
+          <h1 className="font-handwritten text-lg text-white/70">
             Shortlisted Movies ({shortlistedMovies.length})
           </h1>
         </div>
