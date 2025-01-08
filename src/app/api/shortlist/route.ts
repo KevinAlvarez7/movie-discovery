@@ -84,14 +84,21 @@ export async function DELETE(request: Request) {
       );
     }
 
-    await prisma.shortlistedMovie.delete({
+    const deletedMovie = await prisma.shortlistedMovie.deleteMany({
       where: {
-        movieId_sessionId: {
-          movieId,
-          sessionId
-        }
+        AND: [
+          { movieId: movieId },
+          { sessionId: sessionId }
+        ]
       }
     });
+
+    if (deletedMovie.count === 0) {
+      return NextResponse.json(
+        { error: 'Movie not found' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

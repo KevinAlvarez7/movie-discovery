@@ -100,9 +100,13 @@ export function MovieProvider({ children }: { children: React.ReactNode }) {
       } else {
         const error = await response.json();
         console.error('Failed to remove movie:', error);
+        // Optionally refresh the list to ensure UI is in sync with DB
+        await fetchShortlistedMovies();
       }
     } catch (error) {
       console.error('Error removing movie from shortlist:', error);
+      // Refresh the list on error to ensure UI is in sync with DB
+      await fetchShortlistedMovies();
     }
   };
 
