@@ -71,36 +71,44 @@ export function MovieProvider({ children }: { children: React.ReactNode }) {
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        // Only update state if database operation was successful
-        setShortlistedMovies(prev => [...prev, movie]);
-        console.log('Movie added to shortlist:', movie.title);
+        if (data.action === 'added') {
+          setShortlistedMovies(prev => [...prev, movie]);
+          console.log('Movie added to shortlist:', movie.title);
+        } else {
+          setShortlistedMovies(prev => 
+            prev.filter(m => m.id !== movie.id)
+          );
+          console.log('Movie removed from shortlist:', movie.title);
+        }
       } else {
-        const error = await response.json();
-        console.error('Failed to add movie:', error);
+        console.error('Failed to toggle movie:', data.error);
       }
     } catch (error) {
-      console.error('Error adding movie to shortlist:', error);
+      console.error('Error toggling movie shortlist:', error);
     }
   };
 
   // Remove a movie from shortlist
   const removeFromShortlist = async (movieId: number) => {
     try {
+      console.log('Attempting to remove movie:', movieId);
       const response = await fetch(`/api/shortlist?movieId=${movieId}`, {
         method: 'DELETE',
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        // Only update state if database operation was successful
         setShortlistedMovies(prev => 
           prev.filter(movie => movie.id !== movieId)
         );
         console.log('Movie removed from shortlist:', movieId);
       } else {
-        const error = await response.json();
-        console.error('Failed to remove movie:', error);
-        // Optionally refresh the list to ensure UI is in sync with DB
+        console.error('Failed to remove movie:', data.error);
+        // Refresh the list to ensure UI is in sync with DB
         await fetchShortlistedMovies();
       }
     } catch (error) {

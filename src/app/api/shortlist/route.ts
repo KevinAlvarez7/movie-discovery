@@ -49,6 +49,25 @@ export async function POST(request: Request) {
     
     const { movieId, title, posterPath, voteAverage, providers } = body;
 
+    // Check if movie is already shortlisted
+    const existingMovie = await prisma.shortlistedMovie.findFirst({
+      where: {
+        movieId,
+        sessionId
+      }
+    });
+
+    if (existingMovie) {
+      // If movie exists, delete it (unshortlist)
+      await prisma.shortlistedMovie.delete({
+        where: {
+          id: existingMovie.id
+        }
+      });
+      return NextResponse.json({ success: true, action: 'removed' });
+    }
+
+    // If movie doesn't exist, create it (shortlist)
     const movie = await prisma.shortlistedMovie.create({
       data: {
         movieId,
@@ -60,11 +79,11 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json(movie);
+    return NextResponse.json({ success: true, action: 'added', movie });
   } catch (error) {
-    console.error('Failed to add movie to shortlist:', error);
+    console.error('Failed to toggle movie shortlist:', error);
     return NextResponse.json(
-      { error: 'Failed to add movie to shortlist' },
+      { error: 'Failed to toggle movie shortlist' },
       { status: 500 }
     );
   }
@@ -84,21 +103,27 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const deletedMovie = await prisma.shortlistedMovie.deleteMany({
+    // Use findFirst to check if the movie exists
+    const existingMovie = await prisma.shortlistedMovie.findFirst({
       where: {
-        AND: [
-          { movieId: movieId },
-          { sessionId: sessionId }
-        ]
+        movieId: movieId,
+        sessionId: sessionId
       }
     });
 
-    if (deletedMovie.count === 0) {
+    if (!existingMovie) {
       return NextResponse.json(
-        { error: 'Movie not found' },
+        { error: 'Movie not found in shortlist' },
         { status: 404 }
       );
     }
+
+    // Delete the specific movie
+    await prisma.shortlistedMovie.delete({
+      where: {
+        id: existingMovie.id
+      }
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
