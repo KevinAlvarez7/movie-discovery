@@ -2,8 +2,8 @@
 
 import { Outfit, Gloria_Hallelujah } from 'next/font/google'
 import "./globals.css";
-import { MovieProvider } from '../context/MovieContext';
-import { FilterProvider } from '../context/FilterContext';
+import { MovieProvider } from '@/context/MovieContext';
+import { FilterProvider } from '@/context/FilterContext';
 import { AnimatePresence } from 'framer-motion';
 import PageLoader from '@/components/PageLoader';
 import { useState, useEffect } from 'react';
@@ -22,9 +22,9 @@ const handwritten = Gloria_Hallelujah({
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -1,78 +1,127 @@
 // src/context/MovieContext.tsx
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Movie } from '@/types/TMDBMovie';
-import { matchesSelectedProviders } from '@/utils/providerMapping';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
+// Define the shape of our context
 interface MovieContextType {
   shortlistedMovies: Movie[];
-  visibleMovies: Movie[];
-  addToShortlist: (movie: Movie) => void;
   isMovieShortlisted: (movieId: number) => boolean;
-  updateVisibleMovies: (filter: string | null) => void;
+  addToShortlist: (movie: Movie) => Promise<void>;
+  removeFromShortlist: (movieId: number) => Promise<void>;
+  isLoading: boolean;
 }
 
+// Create the context
 const MovieContext = createContext<MovieContextType | undefined>(undefined);
 
+// Provider component
 export function MovieProvider({ children }: { children: React.ReactNode }) {
   const [shortlistedMovies, setShortlistedMovies] = useState<Movie[]>([]);
-  const [visibleMovies, setVisibleMovies] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const updateVisibleMovies = useCallback((filter: string | null) => {
-    // Update visible movies based on filter
-    setVisibleMovies(prev => 
-      !filter ? prev : prev.filter(movie => 
-        matchesSelectedProviders(movie.providers?.flatrate, filter ? [filter] : [])
-      )
-    );
+  // Fetch shortlisted movies on mount
+  useEffect(() => {
+    fetchShortlistedMovies();
   }, []);
 
-  const addToShortlist = (movie: Movie) => {
-    console.log('Attempting to add/remove movie:', movie.title);
-    
-    setShortlistedMovies(prevMovies => {
-      const isAlreadyShortlisted = prevMovies.some(m => m.id === movie.id);
-      
-      if (isAlreadyShortlisted) {
-        console.log('Movie already in shortlist, removing:', movie.title);
-        return prevMovies.filter(m => m.id !== movie.id);
-      } else {
-        console.log('Adding movie to shortlist:', movie.title);
-        return [...prevMovies, movie];
+  // Fetch all shortlisted movies from the database
+  const fetchShortlistedMovies = async () => {
+    try {
+      const response = await fetch('/api/shortlist');
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        // Transform the data to match Movie type
+        const movies: Movie[] = data.map(item => ({
+          id: item.movieId,
+          title: item.title,
+          poster_path: item.posterPath,
+          vote_average: item.voteAverage,
+          providers: item.providers
+        }));
+        setShortlistedMovies(movies);
       }
-    });
+    } catch (error) {
+      console.error('Error fetching shortlisted movies:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const isMovieShortlisted = (movieId: number) => {
+  // Check if a movie is shortlisted
+  const isMovieShortlisted = (movieId: number): boolean => {
     return shortlistedMovies.some(movie => movie.id === movieId);
   };
 
+  // Add a movie to shortlist
+  const addToShortlist = async (movie: Movie) => {
+    try {
+      const response = await fetch('/api/shortlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          movieId: movie.id,
+          title: movie.title,
+          posterPath: movie.poster_path,
+          voteAverage: movie.vote_average,
+          providers: movie.providers
+        }),
+      });
+
+      if (response.ok) {
+        // Only update state if database operation was successful
+        setShortlistedMovies(prev => [...prev, movie]);
+        console.log('Movie added to shortlist:', movie.title);
+      } else {
+        const error = await response.json();
+        console.error('Failed to add movie:', error);
+      }
+    } catch (error) {
+      console.error('Error adding movie to shortlist:', error);
+    }
+  };
+
+  // Remove a movie from shortlist
+  const removeFromShortlist = async (movieId: number) => {
+    try {
+      const response = await fetch(`/api/shortlist?movieId=${movieId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Only update state if database operation was successful
+        setShortlistedMovies(prev => 
+          prev.filter(movie => movie.id !== movieId)
+        );
+        console.log('Movie removed from shortlist:', movieId);
+      } else {
+        const error = await response.json();
+        console.error('Failed to remove movie:', error);
+      }
+    } catch (error) {
+      console.error('Error removing movie from shortlist:', error);
+    }
+  };
+
+  const value = {
+    shortlistedMovies,
+    isMovieShortlisted,
+    addToShortlist,
+    removeFromShortlist,
+    isLoading
+  };
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <MovieContext.Provider value={{ 
-        shortlistedMovies, 
-        visibleMovies,
-        addToShortlist, 
-        isMovieShortlisted,
-        updateVisibleMovies 
-      }}>
-        {children}
-      </MovieContext.Provider>
-    </QueryClientProvider>
+    <MovieContext.Provider value={value}>
+      {children}
+    </MovieContext.Provider>
   );
 }
 
+// Custom hook to use the movie context
 export function useMovieContext() {
   const context = useContext(MovieContext);
   if (context === undefined) {
